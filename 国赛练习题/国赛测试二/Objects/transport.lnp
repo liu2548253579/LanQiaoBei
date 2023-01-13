@@ -1,0 +1,4 @@
+".\Objects\iic.obj",
+".\Objects\main.obj" 
+TO ".\Objects\transport" 
+PRINT(".\Listings\transport.m51") RAMSIZE(256) 

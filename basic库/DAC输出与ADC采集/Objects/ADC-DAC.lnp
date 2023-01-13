@@ -1,0 +1,4 @@
+".\Objects\iic.obj",
+".\Objects\main.obj" 
+TO ".\Objects\ADC-DAC" 
+PRINT(".\Listings\ADC-DAC.m51") RAMSIZE(256) 

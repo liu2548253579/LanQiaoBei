@@ -1,0 +1,3 @@
+".\Objects\main.obj" 
+TO ".\Objects\lockdoor" 
+PRINT(".\Listings\lockdoor.m51") RAMSIZE(256) 

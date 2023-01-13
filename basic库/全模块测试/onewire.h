@@ -1,0 +1,10 @@
+#ifndef __ONEWIRE_H
+#define __ONEWIRE_H
+
+
+
+unsigned char rd_temperature(void);  
+float _read_ds18b20 (void);
+
+
+#endif

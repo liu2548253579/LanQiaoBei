@@ -1,0 +1,309 @@
+C51 COMPILER V9.56.0.0   13137901                                                          04/09/2022 13:42:36 PAGE 1   
+
+
+C51 COMPILER V9.56.0.0, COMPILATION OF MODULE 13137901
+OBJECT MODULE PLACED IN .\Objects\13137901.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE 13137901.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\
+                    -13137901.lst) TABS(2) OBJECT(.\Objects\13137901.obj)
+
+line level    source
+
+   1          #include <STC15F2K60S2.H>
+   2          #include <ONEWIRE.H>
+   3          #include <INTRINS.H>
+   4          #include <DS1302.H>
+   5          
+   6          bit controlmode,L1,L2,L3;//模式标志、LED标志、
+   7          bit tick5s_relay_start,tick5s_led_start;//继电器5s定时标志位，LED5s定时标志位，按键等待标志位
+   8          bit relay_state,read_line,time_key;//继电器状态标志、读取键盘行标志、时间显示切换标志位
+   9          
+  10          unsigned char smg_display_mode;
+  11          
+  12          unsigned char tick_8ms,SMG[8],tick_30ms,tick_20ms,tick_100ms,tick_led_100ms;//时间标志位与数码管
+  13          
+  14          unsigned char temp_set=23;//初始值设置
+  15          unsigned char shi,fen,miao;//时间读取
+  16          unsigned int real_temp;//温度读取
+  17          
+  18          unsigned int tick_relay_5s,tick_led_5s;//超过256ms的时间标志位
+  19          
+  20          unsigned char code write_ds1302[8]={0X80,0X82,0X84,0X86,0X88,0X8A,0X8C,0X8E};
+  21          unsigned char code read_ds1302[8]={0X81,0X83,0X85,0X87,0X89,0X8B,0X8D,0X8F};
+  22          
+  23          
+  24          unsigned char code t_display[]={                       //标准字库
+  25          //   0    1    2    3    4    5    6    7    8    9    A    B    C    D    E    F
+  26              0x3F,0x06,0x5B,0x4F,0x66,0x6D,0x7D,0x07,0x7F,0x6F,0x77,0x7C,0x39,0x5E,0x79,0x71,
+  27          //black  -     H    J    K    L    N    o   P    U     t    G    Q    r   M    y
+  28              0x00,0x40,0x76,0x1E,0x70,0x38,0x37,0x5C,0x73,0x3E,0x78,0x3d,0x67,0x50,0x37,0x6e,
+  29              0xBF,0x86,0xDB,0xCF,0xE6,0xED,0xFD,0x87,0xFF,0xEF,0x46};    //0. 1. 2. 3. 4. 5. 6. 7. 8. 9. -1
+  30          
+  31          unsigned char code T_COM[]={0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80};      //位码
+  32          
+  33          
+  34          void TimerInit(void)    //1毫秒@12.000MHz
+  35          {
+  36   1        AUXR |= 0x40;   //定时器时钟1T模式
+  37   1        TMOD &= 0x0F;   //设置定时器模式
+  38   1        TL1 = 0x20;   //设置定时初值
+  39   1        TH1 = 0xD1;   //设置定时初值
+  40   1        TF1 = 0;    //清除TF1标志
+  41   1        TR1 = 1;    //定时器1开始计时
+  42   1        ET1 = 1; 
+  43   1        EA = 1;   
+  44   1      }
+  45          
+  46          void init_ds1302 (unsigned char shi_set,unsigned char fen_set,unsigned char miao_set)//初始化时钟
+  47          {
+  48   1      Write_Ds1302_Byte(0X8E,0X00); //关闭写保护
+  49   1      Write_Ds1302_Byte(0X84,shi_set);
+  50   1      Write_Ds1302_Byte(0X82,fen_set);
+  51   1      Write_Ds1302_Byte(0X80,miao_set); 
+  52   1      Write_Ds1302_Byte(0X8E,0X80); //打开写保护
+  53   1      shi=Read_Ds1302_Byte(0X85);
+  54   1      fen=Read_Ds1302_Byte(0X83);
+C51 COMPILER V9.56.0.0   13137901                                                          04/09/2022 13:42:36 PAGE 2   
+
+  55   1      miao=Read_Ds1302_Byte(0X81);
+  56   1      }
+  57          
+  58          void U1_display (void)//温度显示界面
+  59          {
+  60   1      SMG[0]=25;
+  61   1      SMG[1]=1;
+  62   1      SMG[2]=16;
+  63   1      SMG[3]=16;
+  64   1      SMG[4]=16;
+  65   1      SMG[5]=real_temp/100;
+  66   1      SMG[6]=real_temp/10%10+32;
+  67   1      SMG[7]=real_temp%10;
+  68   1      }
+  69          
+  70          
+  71          void U2_display (bit mode)//时间显示界面
+  72          {
+  73   1      if(mode==0)//显示时分
+  74   1      { 
+  75   2      SMG[0]=25;
+  76   2      SMG[1]=2;
+  77   2      SMG[2]=16;
+  78   2      SMG[3]=shi/16;
+  79   2      SMG[4]=shi%16;
+  80   2      SMG[5]=17;
+  81   2      SMG[6]=fen/16;
+  82   2      SMG[7]=fen%16;
+  83   2      }
+  84   1      
+  85   1      if(mode==1)//显示分秒
+  86   1      {
+  87   2      SMG[0]=25;
+  88   2      SMG[1]=2;
+  89   2      SMG[2]=16;
+  90   2      SMG[3]=fen/16;
+  91   2      SMG[4]=fen%16;
+  92   2      SMG[5]=17;
+  93   2      SMG[6]=miao/16;
+  94   2      SMG[7]=miao%16;
+  95   2      }
+  96   1      }
+  97          
+  98          void U3_display (void)//温度设置界面
+  99          {
+ 100   1      SMG[0]=25;
+ 101   1      SMG[1]=3;
+ 102   1      SMG[2]=16;
+ 103   1      SMG[3]=16;
+ 104   1      SMG[4]=16;
+ 105   1      SMG[5]=16;
+ 106   1      SMG[6]=temp_set/10%10;
+ 107   1      SMG[7]=temp_set%10;
+ 108   1      }
+ 109          
+ 110          void led_set (void)//led控制
+ 111          {
+ 112   1      P0=0XFF;
+ 113   1      P2=0X80;
+ 114   1      if(L1==1){P00=0;}if(L1==0){P00=1;}
+ 115   1      if(L2==1){P01=0;}if(L2==0){P01=1;}  
+ 116   1      if(L3==1){P02=0;}if(L3==0){P02=1;}
+C51 COMPILER V9.56.0.0   13137901                                                          04/09/2022 13:42:36 PAGE 3   
+
+ 117   1      P03=1;P04=1;P05=1;P06=1;P07=1;
+ 118   1      P2=0X00;
+ 119   1      }
+ 120          
+ 121          void smg (unsigned char wei,unsigned char duan)//数码管刷新最小单元
+ 122          {
+ 123   1      P0=0XFF;
+ 124   1      P2=0XC0;P0=T_COM[wei];P2=0X00;
+ 125   1      P2=0XE0;P0=~t_display[duan];P2=0X00;
+ 126   1      }
+ 127          
+ 128          void Delay10ms(void)    //@12.000MHz
+ 129          {
+ 130   1        unsigned char i, j;
+ 131   1      
+ 132   1        i = 117;
+ 133   1        j = 184;
+ 134   1        do
+ 135   1        {
+ 136   2          while (--j);
+ 137   2        } while (--i);
+ 138   1      }
+ 139          
+ 140          void keyboard (void)//键盘读取与控制
+ 141          {
+ 142   1      if(read_line==0)//读取第三行
+ 143   1      {
+ 144   2      P32=0;P33=1;P34=1;P35=1;
+ 145   2        
+ 146   2      if(P34==0)//S17减（时间切换）
+ 147   2      {
+ 148   3      if(smg_display_mode==1){time_key=1;}
+ 149   3      
+ 150   3        while(!P34)
+ 151   3          {
+ 152   4        Delay10ms();
+ 153   4        fen=Read_Ds1302_Byte(0X83);
+ 154   4      miao=Read_Ds1302_Byte(0X81);
+ 155   4          };
+ 156   3          
+ 157   3      if(smg_display_mode==2){temp_set=temp_set-1;}
+ 158   3      if(temp_set<=10){temp_set=10;}
+ 159   3      }
+ 160   2      else
+ 161   2      {
+ 162   3      if(smg_display_mode==1){time_key=0;}
+ 163   3      }
+ 164   2      
+ 165   2      if(P35==0)//S13模式切换
+ 166   2      { 
+ 167   3      while(!P35){EA=1;};
+ 168   3      P2=0XA0;P0=0X00;P2=0X00;relay_state=0;//消除继电器原状态
+ 169   3      P2=0X80;P0=0XFF;P2=0X00;//消除LED原状态
+ 170   3      controlmode=~controlmode;//切换工作模式
+ 171   3      }
+ 172   2      
+ 173   2      }
+ 174   1      
+ 175   1      if(read_line==1)//读取第四行
+ 176   1      {
+ 177   2      P32=1;P33=0;P34=1;P35=1;
+ 178   2      
+C51 COMPILER V9.56.0.0   13137901                                                          04/09/2022 13:42:36 PAGE 4   
+
+ 179   2      if(P34==0)//S16加
+ 180   2      {
+ 181   3       while(!P34){EA=1;};
+ 182   3      if(smg_display_mode==2){temp_set=temp_set+1;}
+ 183   3      if(temp_set>=99){temp_set=99;}
+ 184   3      }
+ 185   2      if(P35==0)//S12显示切换
+ 186   2      {
+ 187   3       while(!P35){EA=1;};
+ 188   3      smg_display_mode++;
+ 189   3      if(smg_display_mode>=3){smg_display_mode=0;}
+ 190   3      }
+ 191   2      
+ 192   2      }
+ 193   1      
+ 194   1      }
+ 195          
+ 196          
+ 197          void task_schedule (void)
+ 198          {
+ 199   1        if(tick_30ms>=30)//30ms读取一次温度
+ 200   1        {
+ 201   2        tick_30ms=0;
+ 202   2        real_temp=read_temp()*10;
+ 203   2        }
+ 204   1        
+ 205   1      if(tick_8ms==0) //8ms读取一次时间
+ 206   1      {
+ 207   2      shi=Read_Ds1302_Byte(0X85);
+ 208   2      fen=Read_Ds1302_Byte(0X83);
+ 209   2      miao=Read_Ds1302_Byte(0X81);  
+ 210   2      } 
+ 211   1      
+ 212   1      
+ 213   1      }
+ 214          
+ 215          int main ()
+ 216          {
+ 217   1        P2=0X80;P0=0XFF;P2=0X00;//关闭LED
+ 218   1        P2=0XA0;P0=0X00;P2=0X00;//关闭蜂鸣器继电器
+ 219   1        init_ds1302 (0X23,0X59,0X55);//初始化时钟
+ 220   1        TimerInit();//初始化定时器
+ 221   1      while (1)
+ 222   1      {
+ 223   2      task_schedule ();//任务调度
+ 224   2      keyboard ();//读取键盘
+ 225   2      }
+ 226   1      }
+ 227          
+ 228          
+ 229          
+ 230          
+ 231          
+ 232          void control_mode (void)//模式控制
+ 233          {
+ 234   1      if(controlmode==0)//温度控制模式
+ 235   1      {
+ 236   2      L2=1;//温度模式LED控制
+ 237   2      if(real_temp>temp_set*10){P2=0XA0;P0=0X00;P04=1;P2=0X00;relay_state=1;}else{P2=0XA0;P0=0X00;P2=0X00;relay_
+             -state=0;}//温度继电器控制
+ 238   2      } 
+ 239   1      if(controlmode==1)//时间控制模式
+C51 COMPILER V9.56.0.0   13137901                                                          04/09/2022 13:42:36 PAGE 5   
+
+ 240   1      {
+ 241   2      L2=0;//时间模式LED控制  
+ 242   2      if(fen==0X00&&miao==0X00){tick5s_relay_start=1;P2=0XA0;P0=0X00;P04=1;P2=0X00;relay_state=1;}//时间继电器控
+             -制  
+ 243   2      if(fen==0X00&&miao==0X00){tick5s_led_start=1;L1=1;}//时间led控制  
+ 244   2      } 
+ 245   1      }
+ 246          
+ 247          void display_mode (void)
+ 248          {
+ 249   1      if(smg_display_mode==0){U1_display();}//温度显示模式
+ 250   1      if(smg_display_mode==1){U2_display(0);}//时间显示模式1
+ 251   1      if(smg_display_mode==1&&time_key==1){U2_display(1);}//时间显示模式2
+ 252   1      if(smg_display_mode==2){U3_display();}//温度设定模式
+ 253   1      }
+ 254          
+ 255          
+ 256          
+ 257          
+ 258          void server () interrupt 3
+ 259          {
+ 260   1      tick_8ms++;if(tick_8ms==8){tick_8ms=0;}//8ms定时标志
+ 261   1      smg(tick_8ms,SMG[tick_8ms]);//数码管动态刷新
+ 262   1      tick_20ms++;if(tick_20ms==20){tick_20ms=0;read_line=~read_line;}//20ms定时标志 切换读取键盘行
+ 263   1      tick_30ms++;//30ms定时标志.
+ 264   1      
+ 265   1      if(relay_state==1){tick_100ms++;if(tick_100ms==100){tick_100ms=0;L3=~L3;}}else{L3=0;}//L3状态控制
+ 266   1      if(tick5s_relay_start==1){tick_relay_5s++;if(tick_relay_5s==5000){tick_relay_5s=0;tick5s_relay_start=0;P2=
+             -0XA0;P0=0X00;P2=0X00;relay_state=0;}}//继电器控制（5s关闭）
+ 267   1      if(tick5s_led_start==1){tick_led_5s++;if(tick_led_5s==5000){tick_led_5s=0;tick5s_led_start=0;L1=0;}}//L1控
+             -制（5s关闭）
+ 268   1      
+ 269   1      led_set ();//led总控制
+ 270   1      control_mode ();//温度时间模式控制
+ 271   1      display_mode ();//数码管显示模式控制
+ 272   1      
+ 273   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    914    ----
+   CONSTANT SIZE    =     67    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     24       3
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      9       1
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,153 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        12/27/2022  15:01:44  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+D:\KEIL5\C51\BIN\BL51.EXE .\Objects\main.obj TO .\Objects\SMG PRINT (.\Listings\SMG.m51) RAMSIZE (256)
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  .\Objects\main.obj (MAIN)
+  D:\KEIL5\C51\LIB\C51S.LIB (?C_STARTUP)
+  D:\KEIL5\C51\LIB\C51S.LIB (?C_INIT)
+
+
+LINK MAP OF MODULE:  .\Objects\SMG (MAIN)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     003CH     UNIT         ?DT?MAIN
+            IDATA   0044H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     0015H     UNIT         ?PR?TIMER1INIT?MAIN
+                    0018H     0003H                  *** GAP ***
+            CODE    001BH     0003H     ABSOLUTE     
+            CODE    001EH     008CH     UNIT         ?C_C51STARTUP
+            CODE    00AAH     0039H     UNIT         ?C_INITSEG
+            CODE    00E3H     002EH     UNIT         ?PR?SERVER?MAIN
+            CODE    0111H     002CH     UNIT         ?PR?MAIN?MAIN
+            CODE    013DH     001EH     UNIT         ?PR?_SMG?MAIN
+
+
+
+OVERLAY MAP OF MODULE:   .\Objects\SMG (MAIN)
+
+
+SEGMENT
+  +--> CALLED SEGMENT
+---------------------
+?PR?SERVER?MAIN
+  +--> ?PR?_SMG?MAIN
+
+*** NEW ROOT ***************************************************
+
+?C_C51STARTUP
+  +--> ?PR?MAIN?MAIN
+  +--> ?C_INITSEG
+
+?PR?MAIN?MAIN
+  +--> ?PR?TIMER1INIT?MAIN
+
+
+
+SYMBOL TABLE OF MODULE:  .\Objects\SMG (MAIN)
+BL51 BANKED LINKER/LOCATER V6.22                                                      12/27/2022  15:01:44  PAGE 2
+
+
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        MAIN
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0080H         PUBLIC        P0
+  D:0090H         PUBLIC        P1
+  D:00A0H         PUBLIC        P2
+  D:00B0H         PUBLIC        P3
+  D:00C0H         PUBLIC        P4
+  D:00C8H         PUBLIC        P5
+  B:00A8H.7       PUBLIC        EA
+  D:00E8H         PUBLIC        P6
+  D:00F8H         PUBLIC        P7
+  D:00A8H         PUBLIC        IE
+  D:0008H         PUBLIC        T_COM
+  D:00B8H         PUBLIC        IP
+  C:00E3H         PUBLIC        server
+  D:00D8H         PUBLIC        CCON
+  C:0111H         PUBLIC        main
+  D:0098H         PUBLIC        SCON
+  D:0089H         PUBLIC        TMOD
+  D:0088H         PUBLIC        TCON
+  D:008EH         PUBLIC        AUXR
+  D:0010H         PUBLIC        smg
+  B:00A8H.3       PUBLIC        ET1
+  B:0088H.7       PUBLIC        TF1
+  C:0003H         PUBLIC        Timer1Init
+  D:008DH         PUBLIC        TH1
+  D:0018H         PUBLIC        t_display
+  D:008BH         PUBLIC        TL1
+  B:0088H.6       PUBLIC        TR1
+  D:0043H         PUBLIC        tik8ms
+  C:013DH         PUBLIC        _SMG
+  D:00D0H         PUBLIC        PSW
+  -------         PROC          TIMER1INIT
+  C:0003H         LINE#         25
+  C:0003H         LINE#         26
+  C:0003H         LINE#         27
+  C:0006H         LINE#         28
+  C:0009H         LINE#         29
+  C:000CH         LINE#         30
+  C:000FH         LINE#         31
+  C:0011H         LINE#         32
+  C:0013H         LINE#         33
+  C:0015H         LINE#         34
+  C:0017H         LINE#         35
+  -------         ENDPROC       TIMER1INIT
+  -------         PROC          _SMG
+  D:0007H         SYMBOL        wei
+  D:0005H         SYMBOL        number
+  C:013DH         LINE#         38
+  C:013DH         LINE#         39
+  C:013DH         LINE#         40
+  C:014AH         LINE#         41
+  C:0158H         LINE#         42
+BL51 BANKED LINKER/LOCATER V6.22                                                      12/27/2022  15:01:44  PAGE 3
+
+
+  C:015AH         LINE#         43
+  -------         ENDPROC       _SMG
+  -------         PROC          MAIN
+  -------         DO            
+  D:0006H         SYMBOL        i
+  -------         ENDDO         
+  C:0111H         LINE#         45
+  C:0111H         LINE#         46
+  C:0111H         LINE#         49
+  C:011AH         LINE#         50
+  C:0121H         LINE#         51
+  C:0124H         LINE#         52
+  C:0124H         LINE#         53
+  C:0124H         LINE#         56
+  C:0127H         LINE#         57
+  C:0127H         LINE#         58
+  C:0130H         LINE#         59
+  -------         ENDPROC       MAIN
+  -------         PROC          SERVER
+  C:00E3H         LINE#         66
+  C:00F0H         LINE#         68
+  C:00F2H         LINE#         69
+  C:00FAH         LINE#         70
+  C:0106H         LINE#         71
+  -------         ENDPROC       SERVER
+  -------         ENDMOD        MAIN
+
+Program Size: data=69.0 xdata=0 code=344
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

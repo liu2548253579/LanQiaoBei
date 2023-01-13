@@ -1,0 +1,306 @@
+C51 COMPILER V9.54   MAIN                                                                  06/17/2022 13:08:17 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: D:\keil5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\main.l
+                    -st) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include "stc15f2k60s2.h"
+   2          #include "ds1302.h"
+   3          #include "onewire.h"
+   4          #include "iic.h"
+   5          #include "intrins.h"
+   6          #include "stdio.h"
+   7          
+   8          #define TX P10
+   9          #define RX P11
+  10          
+  11          unsigned char code t_display[]={                       //标准字库
+  12          //   0    1    2    3    4    5    6    7    8    9    A    B    C    D    E    F
+  13              0x3F,0x06,0x5B,0x4F,0x66,0x6D,0x7D,0x07,0x7F,0x6F,0x77,0x7C,0x39,0x5E,0x79,0x71,
+  14          //black  -     H    J    K    L    N    o   P    U     t    G    Q    r   M    y
+  15              0x00,0x40,0x76,0x1E,0x70,0x38,0x37,0x5C,0x73,0x3E,0x78,0x3d,0x67,0x50,0x37,0x6e,
+  16              0xBF,0x86,0xDB,0xCF,0xE6,0xED,0xFD,0x87,0xFF,0xEF,0x46};    //0. 1. 2. 3. 4. 5. 6. 7. 8. 9. -1
+  17          
+  18          unsigned char code T_COM[]={0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80};      //位码
+  19          
+  20          bit LED1,LED2,LED3,LED4,LED5,LED6,LED7,LED8,BUZZER,RELAY;
+  21          
+  22          unsigned char SMG[8],key_value,schedule_tick;
+  23          int tempreture;
+  24          
+  25          void BASIC (void)
+  26          {
+  27   1      P0=0xFF;P2=0x80;
+  28   1      P00=~LED1;P01=~LED2;P02=~LED3;P03=~LED4;P04=~LED5;P05=~LED6;P06=~LED7;P07=~LED8;
+  29   1      P2=0x00;
+  30   1        
+  31   1      P0=0x00;P2=0xA0;
+  32   1      P04=RELAY;P06=BUZZER;
+  33   1      P2=0x00;  
+  34   1      }
+  35          
+  36          void smg (unsigned char wei,unsigned char duan)
+  37          {
+  38   1      P0=0xff;
+  39   1      P2=0xc0;P0=T_COM[wei];P2=0x00;
+  40   1      P2=0xe0;P0=~t_display[duan];P2=0x00;
+  41   1      }
+  42          
+  43          void Timer2Init(void)   //1毫秒@12.000MHz
+  44          {
+  45   1        AUXR |= 0x04;   //定时器时钟1T模式
+  46   1        T2L = 0x20;   //设置定时初值
+  47   1        T2H = 0xD1;   //设置定时初值
+  48   1        AUXR |= 0x10;   //定时器2开始计时
+  49   1        IE2 |= 0x04; 
+  50   1        EA=1;
+  51   1      }
+  52          
+  53          
+  54          void UartInit(void)   //9600bps@12.000MHz
+C51 COMPILER V9.54   MAIN                                                                  06/17/2022 13:08:17 PAGE 2   
+
+  55          {
+  56   1        SCON = 0x50;    //8位数据,可变波特率
+  57   1        AUXR |= 0x40;   //定时器1时钟为Fosc,即1T
+  58   1        AUXR &= 0xFE;   //串口1选择定时器1为波特率发生器
+  59   1        TMOD &= 0x0F;   //设定定时器1为16位自动重装方式
+  60   1        TL1 = 0xC7;   //设定定时初值
+  61   1        TH1 = 0xFE;   //设定定时初值
+  62   1        ET1 = 0;    //禁止定时器1中断
+  63   1        TR1 = 1;    //启动定时器1
+  64   1      }
+  65          
+  66          char putchar (char c)
+  67          {
+  68   1      SBUF=c;
+  69   1      while(!TI);
+  70   1      TI=0;
+  71   1      return c;
+  72   1      }
+  73          
+  74          void config_ds1302 (unsigned char shi,unsigned char fen,unsigned char miao)
+  75          {
+  76   1      Write_Ds1302_Byte(0x8e,0x00);
+  77   1      Write_Ds1302_Byte(0x80,miao);
+  78   1      Write_Ds1302_Byte(0x82,fen);
+  79   1      Write_Ds1302_Byte(0x84,shi);  
+  80   1      Write_Ds1302_Byte(0x8e,0x80);
+  81   1      }
+  82          
+  83          void read_ds1302 (void)
+  84          {
+  85   1      SMG[0]=Read_Ds1302_Byte(0X85)/16;
+  86   1      SMG[1]=Read_Ds1302_Byte(0X85)%16;
+  87   1      SMG[2]=17;
+  88   1      SMG[3]=Read_Ds1302_Byte(0X83)/16;
+  89   1      SMG[4]=Read_Ds1302_Byte(0X83)%16;
+  90   1      SMG[5]=17;
+  91   1      SMG[6]=Read_Ds1302_Byte(0X81)/16;
+  92   1      SMG[7]=Read_Ds1302_Byte(0X81)%16; 
+  93   1      }
+  94          
+  95          void display_temp (void)
+  96          {
+  97   1      tempreture=(int)(_read_ds18b20()*100);  
+  98   1      SMG[0]=17;
+  99   1      SMG[1]=17;
+ 100   1      SMG[2]=17;
+ 101   1      SMG[3]=17;
+ 102   1      SMG[4]=tempreture/1000%10;
+ 103   1      SMG[5]=(tempreture/100%10)+32;
+ 104   1      SMG[6]=tempreture/10%10;
+ 105   1      SMG[7]=tempreture%10; 
+ 106   1      }
+ 107          
+ 108          
+ 109          
+ 110          
+ 111          void display_voltage (unsigned char addr)
+ 112          {
+ 113   1      unsigned int vol;
+ 114   1      vol=(((float)adc(addr))/255)*500;
+ 115   1      SMG[0]=17;
+ 116   1      SMG[1]=17;
+C51 COMPILER V9.54   MAIN                                                                  06/17/2022 13:08:17 PAGE 3   
+
+ 117   1      SMG[2]=17;
+ 118   1      SMG[3]=17;
+ 119   1      SMG[4]=vol/1000%10;
+ 120   1      SMG[5]=(vol/100%10)+32;
+ 121   1      SMG[6]=vol/10%10;
+ 122   1      SMG[7]=vol%10;
+ 123   1      }
+ 124          
+ 125          void display_24c02 (unsigned char addr)
+ 126          {
+ 127   1      unsigned char memory;
+ 128   1      memory=read_24c02 (addr);
+ 129   1      SMG[0]=17;
+ 130   1      SMG[1]=17;
+ 131   1      SMG[2]=17;
+ 132   1      SMG[3]=17;
+ 133   1      SMG[4]=17;
+ 134   1      SMG[5]=memory/100%10;
+ 135   1      SMG[6]=memory/10%10;
+ 136   1      SMG[7]=memory%10;
+ 137   1      }
+ 138          
+ 139          void Delay4ms()   //@12.000MHz
+ 140          {
+ 141   1        unsigned char i, j;
+ 142   1      
+ 143   1        i = 47;
+ 144   1        j = 174;
+ 145   1        do
+ 146   1        {
+ 147   2          while (--j);
+ 148   2        } while (--i);
+ 149   1      }
+ 150          
+ 151          void Timer0Init(void)   //12微秒@12.000MHz
+ 152          {
+ 153   1        AUXR &= 0x7F;   //定时器时钟12T模式
+ 154   1        TMOD &= 0xF0;   //设置定时器模式
+ 155   1        TL0 = 0xF4;   //设置定时初值
+ 156   1        TH0 = 0xFF;   //设置定时初值
+ 157   1        TF0 = 0;    //清除TF0标志
+ 158   1        TR0 = 1;    //定时器0开始计时
+ 159   1      }
+ 160          
+ 161          unsigned int ceju (void)
+ 162          {
+ 163   1      unsigned char times=10;
+ 164   1      unsigned int juli;
+ 165   1      Timer0Init(); 
+ 166   1        TX=0;
+ 167   1      while(times--)
+ 168   1      {
+ 169   2      while(!TF0);
+ 170   2      TX=1;
+ 171   2      TF0=0;
+ 172   2      }
+ 173   1      TR0=0;TH0=0;TL0=0;TR0=1;
+ 174   1      while(RX&&!TF0);
+ 175   1      if(TF0==1){juli=999;}
+ 176   1      else{juli=((TH0<<8)+TL0)*0.017;}
+ 177   1      TR0=0;
+ 178   1      return juli;
+C51 COMPILER V9.54   MAIN                                                                  06/17/2022 13:08:17 PAGE 4   
+
+ 179   1      }
+ 180          
+ 181          
+ 182          void display_distance (void)
+ 183          {
+ 184   1      unsigned int distance;
+ 185   1      distance=ceju();
+ 186   1      printf("距离为%d\r\n",distance);
+ 187   1      SMG[0]=17;
+ 188   1      SMG[1]=17;
+ 189   1      SMG[2]=17;
+ 190   1      SMG[3]=17;
+ 191   1      SMG[4]=17;
+ 192   1      SMG[5]=distance/100%10;
+ 193   1      SMG[6]=distance/10%10;
+ 194   1      SMG[7]=distance%10;
+ 195   1      }
+ 196          
+ 197          void read_key (void)
+ 198          {
+ 199   1      bit trig=0;
+ 200   1      unsigned char key_val;    
+ 201   1      P44=0;P42=1;P35=1;P34=1;
+ 202   1      if(P30==0){while(!P30){}trig=1;key_val=1;}
+ 203   1      if(P31==0){while(!P31){}trig=1;key_val=2;}  
+ 204   1      if(P32==0){while(!P32){}trig=1;key_val=3;}  
+ 205   1      if(P33==0){while(!P33){}trig=1;key_val=4;}
+ 206   1      P44=1;P42=0;P35=1;P34=1;
+ 207   1      if(P30==0){while(!P30){}trig=1;key_val=5;}
+ 208   1      if(P31==0){while(!P31){}trig=1;key_val=6;}  
+ 209   1      if(P32==0){while(!P32){}trig=1;key_val=7;}  
+ 210   1      if(P33==0){while(!P33){}trig=1;key_val=8;}
+ 211   1      P44=1;P42=1;P35=0;P34=1;
+ 212   1      if(P30==0){while(!P30){}trig=1;key_val=9;}
+ 213   1      if(P31==0){while(!P31){}trig=1;key_val=10;} 
+ 214   1      if(P32==0){while(!P32){}trig=1;key_val=11;} 
+ 215   1      if(P33==0){while(!P33){}trig=1;key_val=12;}
+ 216   1      P44=1;P42=1;P35=1;P34=0;
+ 217   1      if(P30==0){while(!P30){}trig=1;key_val=13;}
+ 218   1      if(P31==0){while(!P31){}trig=1;key_val=14;} 
+ 219   1      if(P32==0){while(!P32){}trig=1;key_val=15;} 
+ 220   1      if(P33==0){while(!P33){}trig=1;key_val=16;}
+ 221   1      
+ 222   1      if(!trig){key_val=99;}
+ 223   1      key_value=key_val;
+ 224   1      }
+ 225          
+ 226          void schedule (void)
+ 227          {
+ 228   1      if(schedule_tick==30)//10ms执行一次
+ 229   1      {
+ 230   2      schedule_tick=0;
+ 231   2      //  read_ds1302 (); 
+ 232   2      //display_24c02(0x01);
+ 233   2      display_temp ();  
+ 234   2      //display_distance ();
+ 235   2      //display_voltage (0x03);
+ 236   2        
+ 237   2        
+ 238   2      }
+ 239   1      
+ 240   1      }
+C51 COMPILER V9.54   MAIN                                                                  06/17/2022 13:08:17 PAGE 5   
+
+ 241          
+ 242          
+ 243          
+ 244          
+ 245          
+ 246          int main (void)
+ 247          {
+ 248   1      P2=0X80;P0=0XFF;P2=0X00;
+ 249   1      P2=0XA0;P0=0X00;P2=0X00;
+ 250   1      config_ds1302(0x23,0x59,0x58);
+ 251   1      Timer2Init();
+ 252   1      UartInit();
+ 253   1      //write_24c02(0x01,0x80);
+ 254   1      //Delay4ms(); 
+ 255   1      while(1)
+ 256   1      {
+ 257   2      read_key ();
+ 258   2      schedule ();
+ 259   2      
+ 260   2      } 
+ 261   1      }
+ 262          
+ 263          
+ 264          
+ 265          
+ 266          
+ 267          void server (void) interrupt 12
+ 268          {
+ 269   1      static unsigned char tick_8ms;
+ 270   1      schedule_tick++;
+ 271   1      tick_8ms++;if(tick_8ms==8){tick_8ms=0;}
+ 272   1      smg(tick_8ms,SMG[tick_8ms]);
+ 273   1      BASIC ();
+ 274   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1043    ----
+   CONSTANT SIZE    =     62    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     13       5
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =     10       1
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,201 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        12/27/2022  15:01:36  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+D:\KEIL5\C51\BIN\BL51.EXE .\Objects\main.obj TO .\Objects\USART PRINT (.\Listings\USART.m51) RAMSIZE (256)
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  .\Objects\main.obj (MAIN)
+  D:\KEIL5\C51\LIB\C51S.LIB (?C_STARTUP)
+  D:\KEIL5\C51\LIB\C51S.LIB (PRINTF)
+  D:\KEIL5\C51\LIB\C51S.LIB (?C?CLDPTR)
+  D:\KEIL5\C51\LIB\C51S.LIB (?C?CLDOPTR)
+  D:\KEIL5\C51\LIB\C51S.LIB (?C?CSTPTR)
+  D:\KEIL5\C51\LIB\C51S.LIB (?C?PLDIIDATA)
+  D:\KEIL5\C51\LIB\C51S.LIB (?C?CCASE)
+
+
+LINK MAP OF MODULE:  .\Objects\USART (MAIN)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0014H     UNIT         _DATA_GROUP_
+            DATA    001CH     0002H     UNIT         ?DT?MAIN
+                    001EH     0002H                  *** GAP ***
+            BIT     0020H.0   0001H.1   UNIT         _BIT_GROUP_
+                    0021H.1   0000H.7                *** GAP ***
+            IDATA   0022H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     035CH     UNIT         ?PR?PRINTF?PRINTF
+            CODE    035FH     008EH     UNIT         ?C?LIB_CODE
+            CODE    03EDH     0021H     UNIT         ?PR?MAIN?MAIN
+            CODE    040EH     0017H     UNIT         ?PR?UARTINIT?MAIN
+            CODE    0425H     000FH     UNIT         ?PR?DELAY100MS?MAIN
+            CODE    0434H     000CH     UNIT         ?C_C51STARTUP
+            CODE    0440H     0008H     UNIT         ?PR?_PUTCHAR?MAIN
+            CODE    0448H     0005H     UNIT         ?CO?MAIN
+
+
+
+OVERLAY MAP OF MODULE:   .\Objects\USART (MAIN)
+
+
+SEGMENT                           BIT_GROUP          DATA_GROUP 
+  +--> CALLED SEGMENT          START    LENGTH     START    LENGTH
+------------------------------------------------------------------
+?C_C51STARTUP                  -----    -----      -----    -----
+  +--> ?PR?MAIN?MAIN
+
+?PR?MAIN?MAIN                  -----    -----      -----    -----
+  +--> ?PR?UARTINIT?MAIN
+  +--> ?CO?MAIN
+BL51 BANKED LINKER/LOCATER V6.22                                                      12/27/2022  15:01:36  PAGE 2
+
+
+  +--> ?PR?PRINTF?PRINTF
+  +--> ?PR?DELAY100MS?MAIN
+
+?PR?PRINTF?PRINTF              0020H.0  0001H.1    0008H    0014H
+  +--> ?PR?_PUTCHAR?MAIN
+
+
+
+SYMBOL TABLE OF MODULE:  .\Objects\USART (MAIN)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        MAIN
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0080H         PUBLIC        P0
+  D:0090H         PUBLIC        P1
+  D:00A0H         PUBLIC        P2
+  D:00B0H         PUBLIC        P3
+  D:00C0H         PUBLIC        P4
+  D:00C8H         PUBLIC        P5
+  D:00E8H         PUBLIC        P6
+  D:00F8H         PUBLIC        P7
+  D:00A8H         PUBLIC        IE
+  D:00B8H         PUBLIC        IP
+  B:0098H.1       PUBLIC        TI
+  D:00D8H         PUBLIC        CCON
+  C:03EDH         PUBLIC        main
+  D:0099H         PUBLIC        SBUF
+  D:0098H         PUBLIC        SCON
+  C:040EH         PUBLIC        UartInit
+  D:0089H         PUBLIC        TMOD
+  D:0088H         PUBLIC        TCON
+  D:008EH         PUBLIC        AUXR
+  B:00A8H.3       PUBLIC        ET1
+  D:008DH         PUBLIC        TH1
+  D:001CH         PUBLIC        num
+  D:008BH         PUBLIC        TL1
+  B:0088H.6       PUBLIC        TR1
+  C:0425H         PUBLIC        Delay100ms
+  D:00D0H         PUBLIC        PSW
+  C:0440H         PUBLIC        _putchar
+  -------         PROC          _PUTCHAR
+  D:0007H         SYMBOL        c
+  C:0440H         LINE#         21
+  C:0440H         LINE#         22
+  C:0442H         LINE#         23
+  C:0445H         LINE#         24
+  C:0447H         LINE#         25
+  C:0447H         LINE#         26
+  -------         ENDPROC       _PUTCHAR
+  -------         PROC          UARTINIT
+  C:040EH         LINE#         31
+  C:040EH         LINE#         32
+  C:040EH         LINE#         33
+  C:0411H         LINE#         34
+  C:0414H         LINE#         35
+BL51 BANKED LINKER/LOCATER V6.22                                                      12/27/2022  15:01:36  PAGE 3
+
+
+  C:0417H         LINE#         36
+  C:041AH         LINE#         37
+  C:041DH         LINE#         38
+  C:0420H         LINE#         39
+  C:0422H         LINE#         40
+  C:0424H         LINE#         41
+  -------         ENDPROC       UARTINIT
+  -------         PROC          DELAY100MS
+  -------         DO            
+  D:0007H         SYMBOL        i
+  D:0006H         SYMBOL        j
+  D:0005H         SYMBOL        k
+  -------         ENDDO         
+  C:0425H         LINE#         44
+  C:0425H         LINE#         45
+  C:0425H         LINE#         48
+  C:0426H         LINE#         49
+  C:0427H         LINE#         50
+  C:0429H         LINE#         51
+  C:042BH         LINE#         52
+  C:042DH         LINE#         54
+  C:042DH         LINE#         56
+  C:042DH         LINE#         57
+  C:042FH         LINE#         58
+  C:0431H         LINE#         59
+  C:0433H         LINE#         60
+  -------         ENDPROC       DELAY100MS
+  -------         PROC          MAIN
+  C:03EDH         LINE#         63
+  C:03EDH         LINE#         64
+  C:03EDH         LINE#         65
+  C:03F6H         LINE#         66
+  C:03FDH         LINE#         67
+  C:0400H         LINE#         68
+  C:0400H         LINE#         69
+  C:0400H         LINE#         70
+  C:0409H         LINE#         71
+  C:040CH         LINE#         72
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        MAIN
+
+  -------         MODULE        PRINTF
+  D:0008H         PUBLIC        ?_PRINTF517?BYTE
+  D:0008H         PUBLIC        ?_PRINTF?BYTE
+  D:0008H         PUBLIC        ?_SPRINTF517?BYTE
+  D:0008H         PUBLIC        ?_SPRINTF?BYTE
+  C:0065H         PUBLIC        _PRINTF
+  C:0065H         PUBLIC        _PRINTF517
+  C:005FH         PUBLIC        _SPRINTF
+  C:005FH         PUBLIC        _SPRINTF517
+  -------         ENDMOD        PRINTF
+
+  -------         MODULE        ?C?CLDPTR
+  C:035FH         PUBLIC        ?C?CLDPTR
+  -------         ENDMOD        ?C?CLDPTR
+
+  -------         MODULE        ?C?CLDOPTR
+BL51 BANKED LINKER/LOCATER V6.22                                                      12/27/2022  15:01:36  PAGE 4
+
+
+  C:0378H         PUBLIC        ?C?CLDOPTR
+  -------         ENDMOD        ?C?CLDOPTR
+
+  -------         MODULE        ?C?CSTPTR
+  C:03A5H         PUBLIC        ?C?CSTPTR
+  -------         ENDMOD        ?C?CSTPTR
+
+  -------         MODULE        ?C?PLDIIDATA
+  C:03B7H         PUBLIC        ?C?PLDIIDATA
+  -------         ENDMOD        ?C?PLDIIDATA
+
+  -------         MODULE        ?C?CCASE
+  C:03C7H         PUBLIC        ?C?CCASE
+  -------         ENDMOD        ?C?CCASE
+
+Program Size: data=32.1 xdata=0 code=1101
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

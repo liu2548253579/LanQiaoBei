@@ -1,0 +1,353 @@
+C51 COMPILER V9.54   MAIN                                                                  05/07/2022 07:21:00 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: D:\keil5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\main.l
+                    -st) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include "STC15F2K60S2.H"
+   2          #include "INTRINS.H"
+   3          #include "IIC.H"
+   4          #define TX P10 
+   5          #define RX P11
+   6          
+   7          bit L1,L2,L3,L4,L5,L6,L7,L8,RELAY,BUZZER,L3_BLINK,L4_BLINK,DISPLAY=1,TIME1_BLINK,TIME2_BLINK,start_trans,l
+             -oading_mode,time1_display=1,time2_display=1,transporting;
+   8          unsigned char SMG[8],key_value,tick_schedule,tick_schedule1;
+   9          unsigned char goods_type,trans_time_1,trans_time_2,trans_time_left,display_mode=1;
+  10          unsigned int distance,voltage;
+  11          
+  12          unsigned char code t_display[]={                       //标准字库
+  13          //   0    1    2    3    4    5    6    7    8    9    A    B    C    D    E    F
+  14              0x3F,0x06,0x5B,0x4F,0x66,0x6D,0x7D,0x07,0x7F,0x6F,0x77,0x7C,0x39,0x5E,0x79,0x71,
+  15          //black  -     H    J    K    L    N    o   P    U     t    G    Q    r   M    y
+  16              0x00,0x40,0x76,0x1E,0x70,0x38,0x37,0x5C,0x73,0x3E,0x78,0x3d,0x67,0x50,0x37,0x6e,
+  17              0xBF,0x86,0xDB,0xCF,0xE6,0xED,0xFD,0x87,0xFF,0xEF,0x46};    //0. 1. 2. 3. 4. 5. 6. 7. 8. 9. -1
+  18          
+  19          unsigned char code T_COM[]={0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80};      //位码
+  20          
+  21          void Timer0Init(void)   //12微秒@12.000MHz
+  22          {
+  23   1        AUXR &= 0x7F;   //定时器时钟12T模式
+  24   1        TMOD &= 0xF0;   //设置定时器模式
+  25   1        TL0 = 0xF4;   //设置定时初值
+  26   1        TH0 = 0xFF;   //设置定时初值
+  27   1        TF0 = 0;    //清除TF0标志
+  28   1        TR0 = 1;    //定时器0开始计时
+  29   1      }
+  30          
+  31          
+  32          
+  33          void Timer1Init(void)   //1毫秒@12.000MHz
+  34          {
+  35   1        AUXR |= 0x40;   //定时器时钟1T模式
+  36   1        TMOD &= 0x0F;   //设置定时器模式
+  37   1        TL1 = 0x20;   //设置定时初值
+  38   1        TH1 = 0xD1;   //设置定时初值
+  39   1        TF1 = 0;    //清除TF1标志
+  40   1        TR1 = 1;    //定时器1开始计时
+  41   1        ET1 = 1;
+  42   1        EA  = 1;  
+  43   1      }
+  44          
+  45          void Delay4ms()   //@12.000MHz
+  46          {
+  47   1        unsigned char i, j;
+  48   1      
+  49   1        i = 47;
+  50   1        j = 174;
+  51   1        do
+  52   1        {
+  53   2          while (--j);
+C51 COMPILER V9.54   MAIN                                                                  05/07/2022 07:21:00 PAGE 2   
+
+  54   2        } while (--i);
+  55   1      }
+  56          
+  57          void hardware_control (void)
+  58          {
+  59   1      P0=0xff;
+  60   1      P2=0X80;
+  61   1      P00=~L1;P01=~L2;P02=~L3;P03=~L4;P04=~L5;P05=~L6;P06=~L7;P07=~L8;
+  62   1      P2=0X00;
+  63   1      P0=0x00;
+  64   1      P2=0XA0;
+  65   1      P04=RELAY;P06=BUZZER;
+  66   1      P2=0X00;
+  67   1      }
+  68          
+  69          unsigned int ceju(void)//测量物体距离
+  70          {
+  71   1        unsigned char a=10;
+  72   1        unsigned int juli=0;
+  73   1        Timer0Init();
+  74   1        TX=0;//关闭发送脉冲
+  75   1        
+  76   1        while(a--)//发送十个脉冲
+  77   1        {
+  78   2          while(!TF0);//等待溢出  
+  79   2          TX=1;//开始发送脉冲
+  80   2          TF0=0;//清零溢出标志位
+  81   2        }
+  82   1          TR0=0;//关闭定时器0
+  83   1        
+  84   1          TH0=0;//定时器0高位清零
+  85   1          TL0=0;//定时器0低位清零
+  86   1        
+  87   1          TR0=1;//打开定时器0开始计时
+  88   1        
+  89   1        while(RX&&!TF0);//当RX接收到脉冲或者TF0溢出时继续
+  90   1        if(TF0==1){juli=999;}//TF0溢出距离设为无穷大即为999cm
+  91   1        else{juli=((TH0<<8)+TL0)*0.017;}//根据距离时间公式计算实际距离
+  92   1        
+  93   1        TR0=0;//关闭定时器0   
+  94   1        return juli;
+  95   1      }
+  96          
+  97          void smg(unsigned char wei,unsigned char duan)
+  98          {
+  99   1      P0=0xff;
+ 100   1      P2=0XC0;P0=T_COM[wei];P2=0X00;
+ 101   1      P2=0XE0;P0=~t_display[duan];P2=0X00;
+ 102   1      }
+ 103          
+ 104          void display (unsigned char mode)
+ 105          {
+ 106   1      if(DISPLAY==1)
+ 107   1      {
+ 108   2      if(mode==1)
+ 109   2      {
+ 110   3      SMG[0]=mode;SMG[1]=16;SMG[2]=16;SMG[3]=distance/10%10;SMG[4]=distance%10;SMG[5]=16;SMG[6]=16;SMG[7]=goods_
+             -type;
+ 111   3      }
+ 112   2      if(mode==2)
+ 113   2      {
+ 114   3      SMG[0]=mode;SMG[1]=16;SMG[2]=16;SMG[3]=16;SMG[4]=16;SMG[5]=16;SMG[6]=trans_time_left/10%10;SMG[7]=trans_ti
+C51 COMPILER V9.54   MAIN                                                                  05/07/2022 07:21:00 PAGE 3   
+
+             -me_left%10;
+ 115   3      }
+ 116   2      }
+ 117   1      if(DISPLAY==0)
+ 118   1      {
+ 119   2      if(mode==3)
+ 120   2      {
+ 121   3      SMG[0]=mode;SMG[1]=16;SMG[2]=16;if(time1_display==1){SMG[3]=trans_time_1/10%10;SMG[4]=trans_time_1%10;}els
+             -e{SMG[3]=16;SMG[4]=16;}SMG[5]=16;if(time2_display==1){SMG[6]=trans_time_2/10%10;SMG[7]=trans_time_2%10;}else{SMG[6]=16;S
+             -MG[7]=16;}
+ 122   3      } 
+ 123   2      else
+ 124   2      {
+ 125   3      SMG[0]=16;SMG[1]=16;SMG[2]=16;SMG[3]=16;SMG[4]=16;SMG[5]=16;SMG[6]=16;SMG[7]=16;
+ 126   3      }
+ 127   2      }
+ 128   1      
+ 129   1      }
+ 130          
+ 131          void key_task (void)
+ 132          {
+ 133   1      
+ 134   1      }
+ 135          
+ 136          int keboard (void)
+ 137          {
+ 138   1      static unsigned char line;
+ 139   1      unsigned char key_val,key_trig;
+ 140   1      key_trig=0;
+ 141   1      if(line==0) 
+ 142   1      {
+ 143   2      P30=0;P31=1;P32=1;P33=1;
+ 144   2      if(P34==0){while(!P34){key_task();}key_trig=1;key_val=4;} 
+ 145   2      if(P35==0){while(!P35){key_task();}key_trig=1;key_val=3;} 
+ 146   2      if(P42==0){while(!P42){key_task();}key_trig=1;key_val=2;} 
+ 147   2      if(P44==0){while(!P44){key_task();}key_trig=1;key_val=1;} 
+ 148   2      } 
+ 149   1      if(line==1) 
+ 150   1      {
+ 151   2      P30=1;P31=0;P32=1;P33=1;
+ 152   2      if(P34==0){while(!P34){key_task();}key_trig=1;key_val=8;} 
+ 153   2      if(P35==0){while(!P35){key_task();}key_trig=1;key_val=7;} 
+ 154   2      if(P42==0){while(!P42){key_task();}key_trig=1;key_val=6;} 
+ 155   2      if(P44==0){while(!P44){key_task();}key_trig=1;key_val=5;} 
+ 156   2      } 
+ 157   1      if(line==2) 
+ 158   1      {
+ 159   2      P30=1;P31=1;P32=0;P33=1;
+ 160   2      if(P34==0){while(!P34){key_task();}key_trig=1;key_val=12;}  
+ 161   2      if(P35==0){while(!P35){key_task();}key_trig=1;key_val=11;}  
+ 162   2      if(P42==0){while(!P42){key_task();}key_trig=1;key_val=10;}  
+ 163   2      if(P44==0){while(!P44){key_task();}key_trig=1;key_val=9;} 
+ 164   2      } 
+ 165   1      if(line==3) 
+ 166   1      {
+ 167   2      P30=1;P31=1;P32=1;P33=0;
+ 168   2      if(P34==0){while(!P34){key_task();}key_trig=1;key_val=16;}  
+ 169   2      if(P35==0){while(!P35){key_task();}key_trig=1;key_val=15;}  
+ 170   2      if(P42==0){while(!P42){key_task();}key_trig=1;key_val=14;}  
+ 171   2      if(P44==0){while(!P44){key_task();}key_trig=1;key_val=13;}  
+ 172   2      }
+ 173   1      
+C51 COMPILER V9.54   MAIN                                                                  05/07/2022 07:21:00 PAGE 4   
+
+ 174   1      line++;if(line==4){line=0;}
+ 175   1      if(key_trig==0){return 99;}
+ 176   1      else {return key_val;}
+ 177   1      }
+ 178          
+ 179          void read_time (void)
+ 180          {
+ 181   1      static unsigned char lock;
+ 182   1      Delay4ms();
+ 183   1      lock=read_24c02(0x07);
+ 184   1      if(lock==0x07)  
+ 185   1      {
+ 186   2      Delay4ms();
+ 187   2      trans_time_1=read_24c02(0x01);
+ 188   2      Delay4ms();
+ 189   2      trans_time_2=read_24c02(0x02);
+ 190   2      }
+ 191   1      else
+ 192   1      {
+ 193   2      trans_time_1=2;
+ 194   2      trans_time_2=4;
+ 195   2      }
+ 196   1      
+ 197   1      }
+ 198          
+ 199          void write_time (unsigned char time1,unsigned char time2)
+ 200          {
+ 201   1      Delay4ms();
+ 202   1      write_24c02(0x01,time1);
+ 203   1      Delay4ms();
+ 204   1      write_24c02(0x02,time2);
+ 205   1      Delay4ms();
+ 206   1      if(time1!=0x02||time2!=0x04)
+ 207   1      {
+ 208   2      write_24c02(0x07,0x07);
+ 209   2      }
+ 210   1      }
+ 211          
+ 212          void voltage_config (void)
+ 213          {
+ 214   1      if(voltage>=0&&voltage<1){L1=1;DISPLAY=0;}else{L1=0;DISPLAY=1;}
+ 215   1      if(voltage>=1&&voltage<4){L2=1;loading_mode=1;}else{L2=0;loading_mode=0;}
+ 216   1      if(voltage>=4){BUZZER=1;L3_BLINK=1;}else{BUZZER=0;L3_BLINK=0;}
+ 217   1      }
+ 218          
+ 219          void control_center (void)
+ 220          {
+ 221   1      static unsigned char config_mode;
+ 222   1        
+ 223   1      if(loading_mode==1)
+ 224   1      {
+ 225   2      if(key_value==13&&transporting==0)//开启传送
+ 226   2      {
+ 227   3      display_mode=2;
+ 228   3      start_trans=1;
+ 229   3      transporting=1;
+ 230   3      }
+ 231   2      
+ 232   2      if(key_value==9&&transporting==1)//紧急暂停（仅在传送过程中有效）
+ 233   2      {
+ 234   3      key_value=99;
+ 235   3      RELAY=~RELAY;L4_BLINK=~L4_BLINK;start_trans=~start_trans;
+C51 COMPILER V9.54   MAIN                                                                  05/07/2022 07:21:00 PAGE 5   
+
+ 236   3      } 
+ 237   2      }
+ 238   1      if(DISPLAY==0)
+ 239   1      {
+ 240   2      if(key_value==5)//设置按键
+ 241   2      {
+ 242   3      key_value=99;
+ 243   3      config_mode++;
+ 244   3      }
+ 245   2      if(config_mode==1)  {display_mode=3;TIME1_BLINK=1;TIME2_BLINK=0;if(key_value==1){key_value=99;trans_time_1+
+             -+;if(trans_time_1==11){trans_time_1=1;}}}
+ 246   2      if(config_mode==2)  {display_mode=3;TIME1_BLINK=0;TIME2_BLINK=1;if(key_value==1){key_value=99;trans_time_2+
+             -+;if(trans_time_2==11){trans_time_2=1;}}}
+ 247   2      if(config_mode==3)  {display_mode=1;TIME1_BLINK=0;TIME2_BLINK=0;config_mode=0;write_time (trans_time_1,tran
+             -s_time_2);}  
+ 248   2      
+ 249   2      }
+ 250   1      
+ 251   1      }
+ 252          
+ 253          
+ 254          void task_schedule(void)
+ 255          {
+ 256   1      if(tick_schedule>=40) //10ms执行一次
+ 257   1      {tick_schedule=0;
+ 258   2      voltage=(int)((((float)read_adc(0x03))/255)*5);
+ 259   2      control_center ();
+ 260   2      }
+ 261   1      
+ 262   1      if(tick_schedule1>=100) //200ms执行一次
+ 263   1      {tick_schedule1=0;
+ 264   2      distance=ceju();
+ 265   2      }
+ 266   1      
+ 267   1      
+ 268   1      key_value=keboard ();
+ 269   1      }
+ 270          
+ 271          
+ 272          int main (void)
+ 273          {
+ 274   1      P2=0X80;P0=0XFF;P2=0X00;
+ 275   1      P2=0XA0;P0=0X00;P2=0X00;
+ 276   1      P34=1;P35=1;P42=1;P44=1;
+ 277   1      read_time ();
+ 278   1      Timer1Init();
+ 279   1      while(1)
+ 280   1      {
+ 281   2      task_schedule();
+ 282   2      }
+ 283   1      }
+ 284          
+ 285          
+ 286          
+ 287          
+ 288          void server (void) interrupt 3
+ 289          {
+ 290   1      static unsigned char tick_8ms;
+ 291   1      static unsigned int tick_300ms,tick_500ms_L4,tick_500ms1,tick_500ms2,trans_tick1,trans_tick2;
+ 292   1      tick_schedule++;tick_schedule1++;
+ 293   1      if(L3_BLINK==1){tick_300ms++;if(tick_300ms==300){tick_300ms=0;L3=~L3;}}else{tick_300ms=0;L3=0;}
+ 294   1      if(L4_BLINK==1){tick_500ms_L4++;if(tick_500ms_L4==500){tick_500ms_L4=0,L4=~L4;}}else{tick_500ms_L4=0;L4=0;
+C51 COMPILER V9.54   MAIN                                                                  05/07/2022 07:21:00 PAGE 6   
+
+             -}
+ 295   1      if(TIME1_BLINK==1){tick_500ms1++;if(tick_500ms1==500){tick_500ms1=0;time1_display=~time1_display;}}else{ti
+             -ck_500ms1=0;time1_display=1;}
+ 296   1      if(TIME2_BLINK==1){tick_500ms2++;if(tick_500ms2==500){tick_500ms2=0;time2_display=~time2_display;}}else{ti
+             -ck_500ms2=0;time2_display=1;}
+ 297   1      if(goods_type==1&&start_trans==1){trans_tick1++;RELAY=1;trans_time_left=(int)((float)(trans_time_1*1000-tr
+             -ans_tick1)/1000);if(trans_tick1==trans_time_1*1000){trans_tick1=0;start_trans=0;transporting=0;RELAY=0;}}
+ 298   1      if(goods_type==2&&start_trans==1){trans_tick2++;RELAY=1;trans_time_left=(int)((float)(trans_time_2*1000-tr
+             -ans_tick2)/1000);if(trans_tick2==trans_time_2*1000){trans_tick2=0;start_trans=0;transporting=0;RELAY=0;}}
+ 299   1      
+ 300   1      tick_8ms++;if(tick_8ms==8){tick_8ms=0;}
+ 301   1      smg(tick_8ms,SMG[tick_8ms]);
+ 302   1      if(distance<=30){goods_type=1;}else{goods_type=2;}
+ 303   1      display (display_mode);
+ 304   1      hardware_control ();
+ 305   1      voltage_config ();
+ 306   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1604    ----
+   CONSTANT SIZE    =     51    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     36       2
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =     20    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
