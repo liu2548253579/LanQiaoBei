@@ -1,4 +1,4 @@
-BL51 BANKED LINKER/LOCATER V6.22                                                        12/18/2022  14:17:02  PAGE 1
+BL51 BANKED LINKER/LOCATER V6.22                                                        02/15/2023  13:31:14  PAGE 1
 
 
 BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
@@ -11,6 +11,7 @@ MEMORY MODEL: SMALL
 INPUT MODULES INCLUDED:
   .\Objects\main.obj (MAIN)
   D:\KEIL5\C51\LIB\C51S.LIB (?C_STARTUP)
+  D:\KEIL5\C51\LIB\C51S.LIB (?C_INIT)
 
 
 LINK MAP OF MODULE:  .\Objects\lockdoor (MAIN)
@@ -21,8 +22,9 @@ LINK MAP OF MODULE:  .\Objects\lockdoor (MAIN)
 
             * * * * * * *   D A T A   M E M O R Y   * * * * * * *
             REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
-            DATA    0008H     000BH     UNIT         ?DT?MAIN
-            IDATA   0013H     0001H     UNIT         ?STACK
+            DATA    0008H     000CH     UNIT         ?DT?MAIN
+            DATA    0014H     0002H     UNIT         _DATA_GROUP_
+            IDATA   0016H     0001H     UNIT         ?STACK
 
             * * * * * * *   C O D E   M E M O R Y   * * * * * * *
             CODE    0000H     0003H     ABSOLUTE     
@@ -31,39 +33,45 @@ LINK MAP OF MODULE:  .\Objects\lockdoor (MAIN)
                     0019H     0002H                  *** GAP ***
             CODE    001BH     0003H     ABSOLUTE     
             CODE    001EH     013BH     UNIT         ?PR?READ_KEYBOARD?MAIN
-            CODE    0159H     0036H     UNIT         ?PR?SERVER?MAIN
-            CODE    018FH     0033H     UNIT         ?CO?MAIN
-            CODE    01C2H     002BH     UNIT         ?PR?MAIN?MAIN
-            CODE    01EDH     001FH     UNIT         ?PR?_SMG?MAIN
-            CODE    020CH     000CH     UNIT         ?C_C51STARTUP
+            CODE    0159H     008CH     UNIT         ?C_C51STARTUP
+            CODE    01E5H     0038H     UNIT         ?PR?SERVER?MAIN
+            CODE    021DH     0033H     UNIT         ?CO?MAIN
+            CODE    0250H     002FH     UNIT         ?PR?MAIN?MAIN
+            CODE    027FH     001FH     UNIT         ?PR?_SMG?MAIN
+            CODE    029EH     0010H     UNIT         ?PR?TASK_SCHEDULE?MAIN
+            CODE    02AEH     0004H     UNIT         ?C_INITSEG
 
 
 
 OVERLAY MAP OF MODULE:   .\Objects\lockdoor (MAIN)
 
 
-SEGMENT
-  +--> CALLED SEGMENT
----------------------
-?PR?SERVER?MAIN
+SEGMENT                          DATA_GROUP 
+  +--> CALLED SEGMENT          START    LENGTH
+----------------------------------------------
+?PR?SERVER?MAIN                -----    -----
   +--> ?PR?_SMG?MAIN
 
-?PR?_SMG?MAIN
+?PR?_SMG?MAIN                  -----    -----
   +--> ?CO?MAIN
 
 *** NEW ROOT ***************************************************
 
-?C_C51STARTUP
+?C_C51STARTUP                  -----    -----
   +--> ?PR?MAIN?MAIN
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/15/2023  13:31:14  PAGE 2
 
-?PR?MAIN?MAIN
+
+  +--> ?C_INITSEG
+
+?PR?MAIN?MAIN                  0014H    0002H
   +--> ?PR?TIMER1INIT?MAIN
+  +--> ?PR?TASK_SCHEDULE?MAIN
+
+?PR?TASK_SCHEDULE?MAIN         -----    -----
   +--> ?PR?READ_KEYBOARD?MAIN
-BL51 BANKED LINKER/LOCATER V6.22                                                      12/18/2022  14:17:02  PAGE 2
 
-
-
-?PR?READ_KEYBOARD?MAIN
+?PR?READ_KEYBOARD?MAIN         -----    -----
   +--> ?PR?KEY_TASK?MAIN
 
 
@@ -85,49 +93,51 @@ SYMBOL TABLE OF MODULE:  .\Objects\lockdoor (MAIN)
   D:00E8H         PUBLIC        P6
   D:00F8H         PUBLIC        P7
   D:00A8H         PUBLIC        IE
-  C:01BAH         PUBLIC        T_COM
+  C:0248H         PUBLIC        T_COM
   D:00B8H         PUBLIC        IP
-  C:0159H         PUBLIC        server
+  C:01E5H         PUBLIC        server
+  D:0009H         PUBLIC        tick_2ms
   D:00D8H         PUBLIC        CCON
-  C:01C2H         PUBLIC        main
-  D:0009H         PUBLIC        tick_8ms
+  C:0250H         PUBLIC        main
+  D:000AH         PUBLIC        tick_8ms
   B:00B0H.0       PUBLIC        P30
   D:0098H         PUBLIC        SCON
   B:00B0H.1       PUBLIC        P31
   D:0089H         PUBLIC        TMOD
   D:0088H         PUBLIC        TCON
   B:00B0H.2       PUBLIC        P32
+  B:00C0H.2       PUBLIC        P42
   B:00B0H.3       PUBLIC        P33
   B:00B0H.4       PUBLIC        P34
+  B:00C0H.4       PUBLIC        P44
   B:00B0H.5       PUBLIC        P35
-  B:00B0H.6       PUBLIC        P36
-  B:00B0H.7       PUBLIC        P37
   D:008EH         PUBLIC        AUXR
-  C:01EDH         PUBLIC        _smg
+  C:027FH         PUBLIC        _smg
   B:00A8H.3       PUBLIC        ET1
-  D:000AH         PUBLIC        key_value
+  D:000BH         PUBLIC        key_value
   B:0088H.7       PUBLIC        TF1
   C:0003H         PUBLIC        Timer1Init
   D:008DH         PUBLIC        TH1
-  C:018FH         PUBLIC        t_display
+  C:021DH         PUBLIC        t_display
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/15/2023  13:31:14  PAGE 3
+
+
   D:008BH         PUBLIC        TL1
   C:001EH         PUBLIC        read_keyboard
   B:0088H.6       PUBLIC        TR1
   C:0018H         PUBLIC        key_task
-  D:000BH         PUBLIC        SMG
+  D:000CH         PUBLIC        SMG
+  C:029EH         PUBLIC        task_schedule
   D:00D0H         PUBLIC        PSW
   -------         PROC          _SMG
   D:0007H         SYMBOL        duan
   D:0005H         SYMBOL        wei
-BL51 BANKED LINKER/LOCATER V6.22                                                      12/18/2022  14:17:02  PAGE 3
-
-
-  C:01EDH         LINE#         16
-  C:01EDH         LINE#         17
-  C:01EDH         LINE#         18
-  C:01F0H         LINE#         19
-  C:01FDH         LINE#         20
-  C:020BH         LINE#         21
+  C:027FH         LINE#         16
+  C:027FH         LINE#         17
+  C:027FH         LINE#         18
+  C:0282H         LINE#         19
+  C:028FH         LINE#         20
+  C:029DH         LINE#         21
   -------         ENDPROC       _SMG
   -------         PROC          TIMER1INIT
   C:0003H         LINE#         23
@@ -169,6 +179,9 @@ SYMBOL TABLE OF MODULE:  .\Objects\lockdoor (MAIN)
   C:006EH         LINE#         59
   C:006EH         LINE#         60
   C:0076H         LINE#         61
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/15/2023  13:31:14  PAGE 4
+
+
   C:0085H         LINE#         62
   C:0094H         LINE#         63
   C:00A3H         LINE#         64
@@ -179,9 +192,6 @@ SYMBOL TABLE OF MODULE:  .\Objects\lockdoor (MAIN)
   C:00C0H         LINE#         70
   C:00CFH         LINE#         71
   C:00DEH         LINE#         72
-BL51 BANKED LINKER/LOCATER V6.22                                                      12/18/2022  14:17:02  PAGE 4
-
-
   C:00EDH         LINE#         73
   C:00FCH         LINE#         74
   C:00FCH         LINE#         76
@@ -198,26 +208,43 @@ SYMBOL TABLE OF MODULE:  .\Objects\lockdoor (MAIN)
   C:0156H         LINE#         91
   C:0158H         LINE#         92
   -------         ENDPROC       READ_KEYBOARD
+  -------         PROC          TASK_SCHEDULE
+  C:029EH         LINE#         94
+  C:029EH         LINE#         95
+  C:029EH         LINE#         96
+  C:02A5H         LINE#         97
+  C:02A5H         LINE#         98
+  C:02A8H         LINE#         99
+  C:02ADH         LINE#         100
+  C:02ADH         LINE#         102
+  -------         ENDPROC       TASK_SCHEDULE
   -------         PROC          MAIN
-  C:01C2H         LINE#         96
-  C:01C2H         LINE#         97
-  C:01C2H         LINE#         98
-  C:01CBH         LINE#         99
-  C:01D2H         LINE#         100
-  C:01DAH         LINE#         101
-  C:01DDH         LINE#         102
-  C:01DDH         LINE#         103
-  C:01DDH         LINE#         104
-  C:01E2H         LINE#         105
-  C:01EBH         LINE#         108
+  -------         DO            
+  D:0014H         SYMBOL        key_num
+  -------         ENDDO         
+  C:0250H         LINE#         106
+  C:0250H         LINE#         107
+  C:0250H         LINE#         109
+  C:0259H         LINE#         110
+  C:0260H         LINE#         111
+  C:0268H         LINE#         112
+  C:026BH         LINE#         113
+  C:026BH         LINE#         114
+  C:026BH         LINE#         116
+  C:026EH         LINE#         117
+  C:027DH         LINE#         120
   -------         ENDPROC       MAIN
   -------         PROC          SERVER
-  C:0159H         LINE#         112
-  C:016AH         LINE#         114
-  C:0174H         LINE#         115
-  C:0180H         LINE#         116
+  C:01E5H         LINE#         124
+  C:01F6H         LINE#         126
+  C:0200H         LINE#         127
+  C:020CH         LINE#         128
+BL51 BANKED LINKER/LOCATER V6.22                                                      02/15/2023  13:31:14  PAGE 5
+
+
+  C:020EH         LINE#         129
   -------         ENDPROC       SERVER
   -------         ENDMOD        MAIN
 
-Program Size: data=20.0 xdata=0 code=534
+Program Size: data=23.0 xdata=0 code=688
 LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

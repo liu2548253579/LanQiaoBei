@@ -1,7 +1,7 @@
 #include "stc15f2k60s2.h"
 
 unsigned char key_value=99;//键值 
-unsigned char tick_8ms,SMG[8];//8ms时间标志 数码管刷新内容 
+unsigned char tick_8ms,tick_2ms,SMG[8];//8ms时间标志 数码管刷新内容 
 
 unsigned char code t_display[]={                       //标准字库
 //   0    1    2    3    4    5    6    7    8    9    A    B    C    D    E    F
@@ -91,26 +91,36 @@ if(key_trig){return key_val;}//如果触发则返回键值
 else{return 99;}//如果未触发则返回99
 }
 
+void task_schedule (void)
+{
+	if(tick_2ms>=2)
+	{
+		tick_2ms=0;
+		key_value=read_keyboard();//读取键值
+	}
+
+}
+
 
 
 int main (void)
 {
+int key_num;	
 P2=0X80;P0=0XFF;P2=0X00;//关闭LED外设
 P2=0XA0;P0=0X00;P2=0X00;//关闭继电器蜂鸣器外设
 P34=1;P35=1;P42=1;P44=1;//初始化按键引脚
 Timer1Init();//任务调度定时器初始化
-while(1)
-{	
-key_value=read_keyboard();//读取键值
-if(key_value!=99){SMG[0]=key_value;}	//按键触发改变键值
-	
-
-}
-	
+	while(1)
+	{	
+		task_schedule();
+		if(key_value==1){SMG[0]=key_value;}	//按键触发改变键值
+	}
+		
 }
 
 void server () interrupt 3
-{
+{	
 tick_8ms++;if(tick_8ms==8){tick_8ms=0;}//数码管扫描标志位
 smg(tick_8ms,SMG[tick_8ms]);//数码管更新	
+tick_2ms++;
 }
