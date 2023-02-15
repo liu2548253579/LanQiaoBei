@@ -1,0 +1,125 @@
+C51 COMPILER V9.54   MAIN                                                                  02/15/2023 13:34:59 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: D:\keil5\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\main.l
+                    -st) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include "stc15f2k60s2.h"
+   2          
+   3          
+   4          unsigned char SMG[8],tick_8ms;
+   5          unsigned int frequence;
+   6          
+   7          unsigned char code t_display[]={                       //标准字库
+   8          //   0    1    2    3    4    5    6    7    8    9    A    B    C    D    E    F
+   9              0x3F,0x06,0x5B,0x4F,0x66,0x6D,0x7D,0x07,0x7F,0x6F,0x77,0x7C,0x39,0x5E,0x79,0x71,
+  10          //black  -     H    J    K    L    N    o   P    U     t    G    Q    r   M    y
+  11              0x00,0x40,0x76,0x1E,0x70,0x38,0x37,0x5C,0x73,0x3E,0x78,0x3d,0x67,0x50,0x37,0x6e,
+  12              0xBF,0x86,0xDB,0xCF,0xE6,0xED,0xFD,0x87,0xFF,0xEF,0x46};    //0. 1. 2. 3. 4. 5. 6. 7. 8. 9. -1
+  13          
+  14          unsigned char code T_COM[]={0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80};      //位码
+  15          
+  16          
+  17          
+  18          void smg(unsigned char wei,unsigned char duan)
+  19          {
+  20   1      P0=0xff;
+  21   1      P2=0xC0;P0=T_COM[wei];P2=0x00;
+  22   1      P2=0xE0;P0=~t_display[duan];P2=0x00;  
+  23   1      }
+  24          
+  25          void Timer0Init(void)   //0秒@12.000MHz
+  26          {
+  27   1        AUXR |= 0x80;   //定时器时钟1T模式
+  28   1          TMOD = 0x04;       //0x04 0x05都可
+  29   1        TL0 = 0x00;       //设置定时初始值
+  30   1        TH0 = 0x00;       //设置定时初始值
+  31   1        TF0 = 0;        //清除TF0标志
+  32   1        TR0 = 0;              
+  33   1      }
+  34          
+  35          
+  36          void Timer1Init(void)   //1毫秒@12.000MHz
+  37          {
+  38   1        AUXR |= 0x40;   //定时器时钟1T模式
+  39   1        TMOD &= 0x0F;   //设置定时器模式
+  40   1        TL1 = 0x20;   //设置定时初值
+  41   1        TH1 = 0xD1;   //设置定时初值
+  42   1        TF1 = 0;    //清除TF1标志
+  43   1        TR1 = 1;    //定时器1开始计时
+  44   1        ET1=1;
+  45   1        EA=1;
+  46   1      }
+  47          
+  48          void display_frequence (void)
+  49          {
+  50   1        SMG[0]=15;
+  51   1          SMG[1]=16;
+  52   1          SMG[2]=16;
+  53   1        if(frequence>9999){SMG[3]=frequence/10000%10;}else{SMG[3]=16;}
+  54   1        if(frequence>999)SMG[4]=frequence/1000%10;else{SMG[4]=16;}
+C51 COMPILER V9.54   MAIN                                                                  02/15/2023 13:34:59 PAGE 2   
+
+  55   1        if(frequence>99)SMG[5]=frequence/100%10;else{SMG[5]=16;}
+  56   1        if(frequence>9)SMG[6]=frequence/10%10;else{SMG[6]=16;}
+  57   1        if(frequence>0)SMG[7]=frequence%10;else{SMG[7]=16;}
+  58   1      }
+  59          
+  60          int main (void)
+  61          {
+  62   1      P2=0x80;P0=0xff;P2=0x00;
+  63   1      P2=0xa0;P0=0x00;P2=0x00;
+  64   1      Timer0Init();
+  65   1      Timer1Init();   //1毫秒@12.000MHz
+  66   1      while(1)
+  67   1      {
+  68   2      display_frequence();
+  69   2      } 
+  70   1        
+  71   1      }
+  72          
+  73          void frequence_detect (void)
+  74          {
+  75   1        static unsigned int tick_500ms;
+  76   1        tick_500ms++;
+  77   1        if(tick_500ms==500)
+  78   1        {
+  79   2          TR0 = 0;
+  80   2          tick_500ms=0;
+  81   2          frequence=TH0<<8;
+  82   2          frequence+=TL0;
+  83   2          TH0=0;
+  84   2          TL0=0;
+  85   2          TR0=1;
+  86   2        }
+  87   1      }
+  88          
+  89          
+  90          void server (void) interrupt 3
+  91          {
+  92   1      tick_8ms++;if(tick_8ms==8){tick_8ms=0;}
+  93   1      smg(tick_8ms,SMG[tick_8ms]);
+  94   1      frequence_detect ();
+  95   1      
+  96   1      }
+  97          
+  98          
+  99          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    385    ----
+   CONSTANT SIZE    =     51    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     13    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

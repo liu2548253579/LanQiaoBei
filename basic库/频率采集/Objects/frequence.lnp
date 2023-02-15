@@ -1,0 +1,3 @@
+".\Objects\main.obj" 
+TO ".\Objects\frequence" 
+PRINT(".\Listings\frequence.m51") RAMSIZE(256) 
