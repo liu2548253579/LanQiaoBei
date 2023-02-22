@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   ONEWIRE                                                               02/23/2023 05:55:50 PAGE 1   
+C51 COMPILER V9.54   ONEWIRE                                                               02/23/2023 06:05:24 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE ONEWIRE
@@ -8,102 +8,111 @@ COMPILER INVOKED BY: D:\keil5\C51\BIN\C51.EXE onewire.c OPTIMIZE(8,SPEED) BROWSE
 
 line level    source
 
-   1          #include "onewire.h"
-   2          #include "reg52.h"
-   3          
-   4          sbit DQ = P1^4;  
-   5          
-   6          //
-   7          void Delay_OneWire(unsigned int t)  
-   8          {
-   9   1        unsigned char i;
-  10   1        while(t--)
-  11   1        {
-  12   2        for(i=0;i<12;i++);
-  13   2        }
-  14   1      }
-  15          
-  16          //
-  17          void Write_DS18B20(unsigned char dat)
-  18          {
-  19   1        unsigned char i;
-  20   1        for(i=0;i<8;i++)
-  21   1        {
-  22   2          DQ = 0;
-  23   2          DQ = dat&0x01;
-  24   2          Delay_OneWire(5);
-  25   2          DQ = 1;
-  26   2          dat >>= 1;
-  27   2        }
-  28   1        Delay_OneWire(5);
-  29   1      }
-  30          
-  31          //
-  32          unsigned char Read_DS18B20(void)
-  33          {
-  34   1        unsigned char i;
-  35   1        unsigned char dat;
-  36   1        
-  37   1        for(i=0;i<8;i++)
-  38   1        {
-  39   2          DQ = 0;
-  40   2          dat >>= 1;
-  41   2          DQ = 1;
-  42   2          if(DQ)
-  43   2          {
-  44   3            dat |= 0x80;
-  45   3          }     
-  46   2          Delay_OneWire(5);
-  47   2        }
-  48   1        return dat;
-  49   1      }
-  50          
-  51          //
-  52          bit init_ds18b20(void)
-  53          {
-  54   1          bit initflag = 0;
-C51 COMPILER V9.54   ONEWIRE                                                               02/23/2023 05:55:50 PAGE 2   
+   1          /*
+   2           * @Author: Frank 2548253579@qq.com
+   3           * @Date: 2023-02-23 05:57:12
+   4           * @LastEditors: Frank 2548253579@qq.com
+   5           * @LastEditTime: 2023-02-23 06:02:44
+   6           * @FilePath: \LanQiaoBei\basic库\全模块测试\onewire.c
+   7           * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: 
+             -https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+   8           */
+   9          #include "onewire.h"
+  10          #include "reg52.h"
+  11          
+  12          sbit DQ = P1^4;  
+  13          
+  14          //此处记得添加12倍的for循环
+  15          void Delay_OneWire(unsigned int t)  
+  16          {
+  17   1        unsigned char i;
+  18   1        while(t--)
+  19   1        {
+  20   2        for(i=0;i<12;i++);
+  21   2        }
+  22   1      }
+  23          
+  24          //
+  25          void Write_DS18B20(unsigned char dat)
+  26          {
+  27   1        unsigned char i;
+  28   1        for(i=0;i<8;i++)
+  29   1        {
+  30   2          DQ = 0;
+  31   2          DQ = dat&0x01;
+  32   2          Delay_OneWire(5);
+  33   2          DQ = 1;
+  34   2          dat >>= 1;
+  35   2        }
+  36   1        Delay_OneWire(5);
+  37   1      }
+  38          
+  39          //
+  40          unsigned char Read_DS18B20(void)
+  41          {
+  42   1        unsigned char i;
+  43   1        unsigned char dat;
+  44   1        
+  45   1        for(i=0;i<8;i++)
+  46   1        {
+  47   2          DQ = 0;
+  48   2          dat >>= 1;
+  49   2          DQ = 1;
+  50   2          if(DQ)
+  51   2          {
+  52   3            dat |= 0x80;
+  53   3          }     
+C51 COMPILER V9.54   ONEWIRE                                                               02/23/2023 06:05:24 PAGE 2   
 
-  55   1          
-  56   1          DQ = 1;
-  57   1          Delay_OneWire(12);
-  58   1          DQ = 0;
-  59   1          Delay_OneWire(80);
-  60   1          DQ = 1;
-  61   1          Delay_OneWire(10); 
-  62   1          initflag = DQ;     
-  63   1          Delay_OneWire(5);
-  64   1        
-  65   1          return initflag;
-  66   1      }
-  67          
-  68          
-  69          float read_temp (void)
-  70          {
-  71   1      unsigned char low,high;
-  72   1      unsigned int temp;
-  73   1      float tem;
-  74   1      init_ds18b20();
-  75   1      Write_DS18B20(0xcc);
-  76   1      Write_DS18B20(0x44);
-  77   1      Delay_OneWire(200);   
-  78   1        
-  79   1      init_ds18b20();
-  80   1      Write_DS18B20(0xcc);
-  81   1      Write_DS18B20(0xbe);
-  82   1      Delay_OneWire(200);   
-  83   1      
-  84   1      low=Read_DS18B20();
-  85   1      high=Read_DS18B20();  
-  86   1        
-  87   1      high&=0x0f;
-  88   1      temp=(high<<8)+low;
-  89   1      tem=temp*0.0625;
-  90   1        
-  91   1      return tem; 
-  92   1      }
-  93          
-  94          
+  54   2          Delay_OneWire(5);
+  55   2        }
+  56   1        return dat;
+  57   1      }
+  58          
+  59          //
+  60          bit init_ds18b20(void)
+  61          {
+  62   1          bit initflag = 0;
+  63   1          
+  64   1          DQ = 1;
+  65   1          Delay_OneWire(12);
+  66   1          DQ = 0;
+  67   1          Delay_OneWire(80);
+  68   1          DQ = 1;
+  69   1          Delay_OneWire(10); 
+  70   1          initflag = DQ;     
+  71   1          Delay_OneWire(5);
+  72   1        
+  73   1          return initflag;
+  74   1      }
+  75          
+  76          //读取ds18b20数据
+  77          float read_temp (void)
+  78          {
+  79   1        unsigned char low,high;
+  80   1        unsigned int temp;
+  81   1        float tem;
+  82   1        init_ds18b20();
+  83   1        Write_DS18B20(0xcc);
+  84   1        Write_DS18B20(0x44);
+  85   1        Delay_OneWire(200);   
+  86   1          
+  87   1        init_ds18b20();
+  88   1        Write_DS18B20(0xcc);
+  89   1        Write_DS18B20(0xbe);
+  90   1        Delay_OneWire(200);   
+  91   1      
+  92   1        low=Read_DS18B20();
+  93   1        high=Read_DS18B20();  
+  94   1          
+  95   1        high&=0x0f;
+  96   1        temp=(high<<8)+low;
+  97   1        tem=temp*0.0625;
+  98   1          
+  99   1        return tem; 
+ 100   1      }
+ 101          
+ 102          
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE

@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   DS1302                                                                02/23/2023 05:55:49 PAGE 1   
+C51 COMPILER V9.54   DS1302                                                                02/23/2023 06:05:24 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE DS1302
@@ -62,7 +62,7 @@ line level    source
   52   1        SCK=1;  _nop_();
   53   1        SDA=0;  _nop_();
   54   1        SDA=1;  _nop_();
-C51 COMPILER V9.54   DS1302                                                                02/23/2023 05:55:49 PAGE 2   
+C51 COMPILER V9.54   DS1302                                                                02/23/2023 06:05:24 PAGE 2   
 
   55   1        return (temp);      
   56   1      }

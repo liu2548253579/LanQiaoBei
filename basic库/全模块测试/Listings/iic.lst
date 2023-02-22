@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   IIC                                                                   02/23/2023 05:55:49 PAGE 1   
+C51 COMPILER V9.54   IIC                                                                   02/23/2023 06:05:24 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE IIC
@@ -62,7 +62,7 @@ line level    source
   52          //
   53          bit IIC_WaitAck(void)
   54          {
-C51 COMPILER V9.54   IIC                                                                   02/23/2023 05:55:49 PAGE 2   
+C51 COMPILER V9.54   IIC                                                                   02/23/2023 06:05:24 PAGE 2   
 
   55   1          bit ackbit;
   56   1        
@@ -109,68 +109,72 @@ line level    source
   97   1          return da;    
   98   1      }
   99          
- 100          void write_24c02 (unsigned char addr,unsigned char dat)
- 101          {
- 102   1      IIC_Start();
- 103   1      IIC_SendByte(0xa0);
- 104   1      IIC_WaitAck();  
- 105   1      IIC_SendByte(addr);
- 106   1      IIC_WaitAck();  
- 107   1      IIC_SendByte(dat);
- 108   1      IIC_WaitAck();  
- 109   1      IIC_Stop(); 
- 110   1      }
- 111          
- 112          unsigned char read_24c02 (unsigned char addr)
- 113          {
- 114   1      unsigned char temp;
- 115   1      IIC_Start();
- 116   1      IIC_SendByte(0xa0);
-C51 COMPILER V9.54   IIC                                                                   02/23/2023 05:55:49 PAGE 3   
+ 100          //写24c02
+ 101          void write_24c02 (unsigned char addr,unsigned char dat)
+ 102          {
+ 103   1          IIC_Start();
+ 104   1          IIC_SendByte(0xa0);
+ 105   1          IIC_WaitAck();  
+ 106   1          IIC_SendByte(addr);
+ 107   1          IIC_WaitAck();  
+ 108   1          IIC_SendByte(dat);
+ 109   1          IIC_WaitAck();  
+ 110   1          IIC_Stop(); 
+ 111   1      }
+ 112          
+ 113          //读24c02
+ 114          unsigned char read_24c02 (unsigned char addr)
+ 115          {
+ 116   1          unsigned char temp;
+C51 COMPILER V9.54   IIC                                                                   02/23/2023 06:05:24 PAGE 3   
 
- 117   1      IIC_WaitAck();  
- 118   1      IIC_SendByte(addr);
- 119   1      IIC_WaitAck();  
- 120   1      
- 121   1      IIC_Start();
- 122   1      IIC_SendByte(0xa1);
- 123   1      IIC_WaitAck();  
- 124   1      temp=IIC_RecByte(); 
- 125   1      IIC_WaitAck();
- 126   1      IIC_Stop();
- 127   1      return temp;
- 128   1      }
- 129          
- 130          void dac (unsigned char dat)
- 131          {
- 132   1      IIC_Start();
- 133   1      IIC_SendByte(0x90);
- 134   1      IIC_WaitAck();  
- 135   1      IIC_SendByte(0x43);
- 136   1      IIC_WaitAck();  
- 137   1      IIC_SendByte(dat);
- 138   1      IIC_WaitAck();  
- 139   1      IIC_Stop(); 
- 140   1      }
- 141          
- 142          unsigned char adc (unsigned char addr)
- 143          {
- 144   1      unsigned char temp;
- 145   1      IIC_Start();
- 146   1      IIC_SendByte(0x90);
- 147   1      IIC_WaitAck();  
- 148   1      IIC_SendByte(addr);
- 149   1      IIC_WaitAck();
- 150   1        
- 151   1      IIC_Start();
- 152   1      IIC_SendByte(0x91);
- 153   1      IIC_WaitAck();  
- 154   1      temp=IIC_RecByte(); 
- 155   1      IIC_WaitAck();  
- 156   1      IIC_Stop(); 
- 157   1      return temp;  
- 158   1      }
- 159          
+ 117   1          IIC_Start();
+ 118   1          IIC_SendByte(0xa0);
+ 119   1          IIC_WaitAck();  
+ 120   1          IIC_SendByte(addr);
+ 121   1          IIC_WaitAck();  
+ 122   1      
+ 123   1          IIC_Start();
+ 124   1          IIC_SendByte(0xa1);
+ 125   1          IIC_WaitAck();  
+ 126   1          temp=IIC_RecByte(); 
+ 127   1          IIC_WaitAck();
+ 128   1          IIC_Stop();
+ 129   1          return temp;
+ 130   1      }
+ 131          
+ 132          //dac输出
+ 133          void dac (unsigned char dat)
+ 134          {
+ 135   1          IIC_Start();
+ 136   1          IIC_SendByte(0x90);
+ 137   1          IIC_WaitAck();  
+ 138   1          IIC_SendByte(0x43);
+ 139   1          IIC_WaitAck();  
+ 140   1          IIC_SendByte(dat);
+ 141   1          IIC_WaitAck();  
+ 142   1          IIC_Stop(); 
+ 143   1      }
+ 144          
+ 145          //adc采集
+ 146          unsigned char adc (unsigned char addr)
+ 147          {
+ 148   1          unsigned char temp;
+ 149   1          IIC_Start();
+ 150   1          IIC_SendByte(0x90);
+ 151   1          IIC_WaitAck();  
+ 152   1          IIC_SendByte(addr);
+ 153   1          IIC_WaitAck();
+ 154   1              
+ 155   1          IIC_Start();
+ 156   1          IIC_SendByte(0x91);
+ 157   1          IIC_WaitAck();  
+ 158   1          temp=IIC_RecByte(); 
+ 159   1          IIC_WaitAck();  
+ 160   1          IIC_Stop(); 
+ 161   1          return temp;  
+ 162   1      }
+ 163          
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
