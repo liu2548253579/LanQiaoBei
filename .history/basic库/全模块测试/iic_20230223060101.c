@@ -142,7 +142,6 @@ void dac (unsigned char dat)
     IIC_Stop();	
 }
 
-//adc采集
 unsigned char adc (unsigned char addr)
 {
     unsigned char temp;

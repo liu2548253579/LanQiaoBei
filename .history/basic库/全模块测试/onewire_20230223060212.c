@@ -2,7 +2,7 @@
  * @Author: Frank 2548253579@qq.com
  * @Date: 2023-02-23 05:57:12
  * @LastEditors: Frank 2548253579@qq.com
- * @LastEditTime: 2023-02-23 06:02:44
+ * @LastEditTime: 2023-02-23 06:01:40
  * @FilePath: \LanQiaoBei\basic库\全模块测试\onewire.c
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
  */
@@ -11,7 +11,7 @@
 
 sbit DQ = P1^4;  
 
-//此处记得添加12倍的for循环
+//此处记得添加for循环
 void Delay_OneWire(unsigned int t)  
 {
 	unsigned char i;
@@ -73,7 +73,7 @@ bit init_ds18b20(void)
   	return initflag;
 }
 
-//读取ds18b20数据
+
 float read_temp (void)
 {
 	unsigned char low,high;

@@ -97,7 +97,6 @@ unsigned char IIC_RecByte(void)
     return da;    
 }
 
-//写24c02
 void write_24c02 (unsigned char addr,unsigned char dat)
 {
     IIC_Start();
@@ -110,7 +109,6 @@ void write_24c02 (unsigned char addr,unsigned char dat)
     IIC_Stop();	
 }
 
-//读24c02
 unsigned char read_24c02 (unsigned char addr)
 {
     unsigned char temp;
@@ -129,7 +127,6 @@ unsigned char read_24c02 (unsigned char addr)
     return temp;
 }
 
-//dac输出
 void dac (unsigned char dat)
 {
     IIC_Start();
@@ -142,7 +139,6 @@ void dac (unsigned char dat)
     IIC_Stop();	
 }
 
-//adc采集
 unsigned char adc (unsigned char addr)
 {
     unsigned char temp;

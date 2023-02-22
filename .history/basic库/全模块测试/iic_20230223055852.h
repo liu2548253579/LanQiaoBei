@@ -8,7 +8,7 @@ void IIC_SendAck(bit ackbit);
 void IIC_SendByte(unsigned char byt); 
 unsigned char IIC_RecByte(void);
 
-//以下为自写函数申明
+//以下为自写函数添加
 void write_24c02 (unsigned char addr,unsigned char dat);
 unsigned char read_24c02 (unsigned char addr);
 void dac (unsigned char dat);

@@ -97,7 +97,6 @@ unsigned char IIC_RecByte(void)
     return da;    
 }
 
-//写24c02
 void write_24c02 (unsigned char addr,unsigned char dat)
 {
     IIC_Start();
@@ -110,7 +109,6 @@ void write_24c02 (unsigned char addr,unsigned char dat)
     IIC_Stop();	
 }
 
-//读24c02
 unsigned char read_24c02 (unsigned char addr)
 {
     unsigned char temp;
@@ -129,35 +127,33 @@ unsigned char read_24c02 (unsigned char addr)
     return temp;
 }
 
-//dac输出
 void dac (unsigned char dat)
 {
-    IIC_Start();
-    IIC_SendByte(0x90);
-    IIC_WaitAck();	
-    IIC_SendByte(0x43);
-    IIC_WaitAck();	
-    IIC_SendByte(dat);
-    IIC_WaitAck();	
-    IIC_Stop();	
+IIC_Start();
+IIC_SendByte(0x90);
+IIC_WaitAck();	
+IIC_SendByte(0x43);
+IIC_WaitAck();	
+IIC_SendByte(dat);
+IIC_WaitAck();	
+IIC_Stop();	
 }
 
-//adc采集
 unsigned char adc (unsigned char addr)
 {
-    unsigned char temp;
-    IIC_Start();
-    IIC_SendByte(0x90);
-    IIC_WaitAck();	
-    IIC_SendByte(addr);
-    IIC_WaitAck();
-        
-    IIC_Start();
-    IIC_SendByte(0x91);
-    IIC_WaitAck();	
-    temp=IIC_RecByte();	
-    IIC_WaitAck();	
-    IIC_Stop();	
-    return temp;	
+unsigned char temp;
+IIC_Start();
+IIC_SendByte(0x90);
+IIC_WaitAck();	
+IIC_SendByte(addr);
+IIC_WaitAck();
+	
+IIC_Start();
+IIC_SendByte(0x91);
+IIC_WaitAck();	
+temp=IIC_RecByte();	
+IIC_WaitAck();	
+IIC_Stop();	
+return temp;	
 }
 
