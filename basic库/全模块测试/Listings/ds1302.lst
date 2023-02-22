@@ -1,10 +1,10 @@
-C51 COMPILER V9.54   DS1302                                                                06/17/2022 12:58:31 PAGE 1   
+C51 COMPILER V9.54   DS1302                                                                02/23/2023 20:29:39 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE DS1302
 OBJECT MODULE PLACED IN .\Objects\ds1302.obj
-COMPILER INVOKED BY: D:\keil5\C51\BIN\C51.EXE ds1302.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\ds13
-                    -02.lst) TABS(2) OBJECT(.\Objects\ds1302.obj)
+COMPILER INVOKED BY: E:\MDK5\C51\BIN\C51.EXE ds1302.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\ds130
+                    -2.lst) TABS(2) OBJECT(.\Objects\ds1302.obj)
 
 line level    source
 
@@ -42,31 +42,33 @@ line level    source
   32   1        RST=0; 
   33   1      }
   34          
-  35          //
-  36          unsigned char Read_Ds1302_Byte ( unsigned char address )
-  37          {
-  38   1        unsigned char i,temp=0x00;
-  39   1        RST=0;  _nop_();
-  40   1        SCK=0;  _nop_();
-  41   1        RST=1;  _nop_();
-  42   1        Write_Ds1302(address);
-  43   1        for (i=0;i<8;i++)   
-  44   1        {   
-  45   2          SCK=0;
-  46   2          temp>>=1; 
-  47   2          if(SDA)
-  48   2          temp|=0x80; 
-  49   2          SCK=1;
-  50   2        } 
-  51   1        RST=0;  _nop_();
-  52   1        SCK=0;  _nop_();
-  53   1        SCK=1;  _nop_();
-  54   1        SDA=0;  _nop_();
-C51 COMPILER V9.54   DS1302                                                                06/17/2022 12:58:31 PAGE 2   
+  35          unsigned char Read_Ds1302_Byte ( unsigned char address )
+  36          {
+  37   1        unsigned char i,temp=0x00;
+  38   1        RST=0;  _nop_();
+  39   1        SCK=0;  _nop_();
+  40   1        RST=1;  _nop_();
+  41   1        Write_Ds1302(address);
+  42   1        for (i=0;i<8;i++)   
+  43   1        {   
+  44   2          SCK=0;
+  45   2          temp>>=1; 
+  46   2          if(SDA)
+  47   2          temp|=0x80; 
+  48   2          SCK=1;
+  49   2        } 
+  50   1        RST=0;  _nop_();
+  51   1        SCK=0;  _nop_();
+  52   1        SCK=1;  _nop_();
+  53   1        SDA=0;  _nop_();
+  54   1        SDA=1;  _nop_();
+C51 COMPILER V9.54   DS1302                                                                02/23/2023 20:29:39 PAGE 2   
 
-  55   1        SDA=1;  _nop_();
-  56   1        return (temp);      
-  57   1      }
+  55   1        return (temp);      
+  56   1      }
+  57          
+  58          
+  59          
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE

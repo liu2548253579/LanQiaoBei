@@ -32,7 +32,6 @@ void Write_Ds1302_Byte( unsigned char address,unsigned char dat )
  	RST=0; 
 }
 
-//
 unsigned char Read_Ds1302_Byte ( unsigned char address )
 {
  	unsigned char i,temp=0x00;
@@ -55,3 +54,6 @@ unsigned char Read_Ds1302_Byte ( unsigned char address )
 	SDA=1;	_nop_();
 	return (temp);			
 }
+
+
+

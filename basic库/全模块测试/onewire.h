@@ -4,7 +4,6 @@
 
 
 unsigned char rd_temperature(void);  
-float _read_ds18b20 (void);
-
+float read_temp (void);
 
 #endif

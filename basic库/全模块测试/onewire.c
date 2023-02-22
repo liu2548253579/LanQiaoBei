@@ -1,5 +1,4 @@
 #include "onewire.h"
-
 #include "reg52.h"
 
 sbit DQ = P1^4;  
@@ -67,7 +66,7 @@ bit init_ds18b20(void)
 }
 
 
-float _read_ds18b20 (void)
+float read_temp (void)
 {
 unsigned char low,high;
 unsigned int temp;
@@ -93,32 +92,3 @@ return tem;
 }
 
 
-
-unsigned int ceju (void)
-{
-unsigned char times;
-unsigned int juli;
-Timer0Init();
-TX=0;
-while(times--)
-{
-while(!TF0);
-TX=1;
-TF0=0;
-}
-TR0=0;TH0=0;TL0=0;TR0=1;
-while(RX&&!TF0);
-if(TF0==1){juli=999;}
-else{juli=((TH0<<8)+TL0)*0.017;}
-TR0=0;
-return juli;
-}
-
-
-char putchar (char c)
-{
-SBUF=c;
-while(!TI);
-TI=0;
-return c;
-}
