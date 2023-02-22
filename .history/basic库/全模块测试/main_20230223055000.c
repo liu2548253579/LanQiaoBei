@@ -583,9 +583,6 @@ int main (void)
 		if(TASK_RUN==1){task1_loop();}
 		//任务2循环	
 		if(TASK_RUN==2){task2_loop();}
-
-		//任务3只能在中断中运行
-
 		//任务4循环	
 		if(TASK_RUN==4){task4_loop();}
 		//任务5循环	
@@ -606,32 +603,33 @@ int main (void)
 //定时器中断回调函数（为什么是中断12，在范例程序里面可以找到定时器2的中断就是12）
 void server (void) interrupt 12
 {
-	//数码管刷新部分以及基础控制部分
-	static unsigned char tick_8ms;//数码管计时器
-	tick_8ms++;if(tick_8ms==8){tick_8ms=0;}//数码管计时到8ms重置（使其一直在0-7循环）
-	smg(tick_8ms,SMG[tick_8ms]);//给数码管0-7刷新对应SMG[0]-SMG[7]的内容
-	BASIC();//基础LED、蜂鸣器、继电器控制
+//数码管刷新部分以及基础控制部分
+static unsigned char tick_8ms;
+tick_8ms++;if(tick_8ms==8){tick_8ms=0;}
+smg(tick_8ms,SMG[tick_8ms]);
+BASIC ();
 
-	//任务1计数器自增，以及防止溢出
-	task1_tick++;if(task1_tick>2000){task1_tick=0;}
-	//任务2计数器自增，以及防止溢出
-	task2_tick++;if(task2_tick>2000){task2_tick=0;}
-	//任务3计数器自增，以及防止溢出
-	task3_tick++;if(task3_tick>2000){task3_tick=0;}
-	//任务4计数器自增，以及防止溢出
-	task4_tick++;if(task4_tick>2000){task4_tick=0;}
-	//任务5计数器自增，以及防止溢出
-	task5_tick++;if(task5_tick>2000){task5_tick=0;}
-	//任务6计数器自增，以及防止溢出
-	task6_tick++;if(task6_tick>2000){task6_tick=0;}
-	//任务7计数器自增，以及防止溢出
-	task7_tick++;if(task7_tick>2000){task7_tick=0;}
-	//任务8计数器自增，以及防止溢出
-	task8_tick++;if(task8_tick>2000){task8_tick=0;}
-	//任务9计数器自增，以及防止溢出
-	task9_tick++;if(task9_tick>2000){task9_tick=0;}
+//任务1计数器自增，以及防止溢出
+task1_tick++;if(task1_tick>2000){task1_tick=0;}
+//任务2计数器自增，以及防止溢出
+task2_tick++;if(task2_tick>2000){task2_tick=0;}
+//任务3计数器自增，以及防止溢出
+task3_tick++;if(task3_tick>2000){task3_tick=0;}
+//任务4计数器自增，以及防止溢出
+task4_tick++;if(task4_tick>2000){task4_tick=0;}
+//任务5计数器自增，以及防止溢出
+task5_tick++;if(task5_tick>2000){task5_tick=0;}
+//任务6计数器自增，以及防止溢出
+task6_tick++;if(task6_tick>2000){task6_tick=0;}
+//任务7计数器自增，以及防止溢出
+task7_tick++;if(task7_tick>2000){task7_tick=0;}
+//任务8计数器自增，以及防止溢出
+task8_tick++;if(task8_tick>2000){task8_tick=0;}
+//任务9计数器自增，以及防止溢出
+task9_tick++;if(task9_tick>2000){task9_tick=0;}
 
-	//任务3循环	
-	if(TASK_RUN==3){task3_loop();}
+
+//任务3循环	
+if(TASK_RUN==3){task3_loop();}
 }
 

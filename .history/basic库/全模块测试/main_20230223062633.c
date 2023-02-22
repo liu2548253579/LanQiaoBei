@@ -268,72 +268,73 @@ void key_task (void)
 //按键读取（不要把它放定时器里，在按键按下时会重复执行key_task()）
 void read_key (void)
 {
-	bit trig=0;//按键触发标志位
-	unsigned char key_val;//键值暂存位
-	trig=0;//触发标志位置零（可以不加）
-	P44=0;P42=1;P35=1;P34=1;//扫描第一列
-		if(P30==0){while(!P30){key_task();}trig=1;key_val=1;}
-		if(P31==0){while(!P31){key_task();}trig=1;key_val=5;}	
-		if(P32==0){while(!P32){key_task();}trig=1;key_val=9;}	
-		if(P33==0){while(!P33){key_task();}trig=1;key_val=13;}
-	P44=1;P42=0;P35=1;P34=1;//扫描第二列
-		if(P30==0){while(!P30){key_task();}trig=1;key_val=2;}
-		if(P31==0){while(!P31){key_task();}trig=1;key_val=6;}	
-		if(P32==0){while(!P32){key_task();}trig=1;key_val=10;}	
-		if(P33==0){while(!P33){key_task();}trig=1;key_val=14;}
-	P44=1;P42=1;P35=0;P34=1;//扫描第三列
-		if(P30==0){while(!P30){key_task();}trig=1;key_val=3;}
-		if(P31==0){while(!P31){key_task();}trig=1;key_val=7;}	
-		if(P32==0){while(!P32){key_task();}trig=1;key_val=11;}	
-		if(P33==0){while(!P33){key_task();}trig=1;key_val=15;}
-	P44=1;P42=1;P35=1;P34=0;//扫描第四列
-		if(P30==0){while(!P30){key_task();}trig=1;key_val=4;}
-		if(P31==0){while(!P31){key_task();}trig=1;key_val=8;}	
-		if(P32==0){while(!P32){key_task();}trig=1;key_val=12;}	
-		if(P33==0){while(!P33){key_task();}trig=1;key_val=16;}
+bit trig=0;//按键触发标志位
+unsigned char key_val;//键值暂存位
+trig=0;//触发标志位置零
+P44=0;P42=1;P35=1;P34=1;
+if(P30==0){while(!P30){key_task();}trig=1;key_val=1;}
+if(P31==0){while(!P31){key_task();}trig=1;key_val=5;}	
+if(P32==0){while(!P32){key_task();}trig=1;key_val=9;}	
+if(P33==0){while(!P33){key_task();}trig=1;key_val=13;}
+P44=1;P42=0;P35=1;P34=1;
+if(P30==0){while(!P30){key_task();}trig=1;key_val=2;}
+if(P31==0){while(!P31){key_task();}trig=1;key_val=6;}	
+if(P32==0){while(!P32){key_task();}trig=1;key_val=10;}	
+if(P33==0){while(!P33){key_task();}trig=1;key_val=14;}
+P44=1;P42=1;P35=0;P34=1;
+if(P30==0){while(!P30){key_task();}trig=1;key_val=3;}
+if(P31==0){while(!P31){key_task();}trig=1;key_val=7;}	
+if(P32==0){while(!P32){key_task();}trig=1;key_val=11;}	
+if(P33==0){while(!P33){key_task();}trig=1;key_val=15;}
+P44=1;P42=1;P35=1;P34=0;
+if(P30==0){while(!P30){key_task();}trig=1;key_val=4;}
+if(P31==0){while(!P31){key_task();}trig=1;key_val=8;}	
+if(P32==0){while(!P32){key_task();}trig=1;key_val=12;}	
+if(P33==0){while(!P33){key_task();}trig=1;key_val=16;}
 
-		if(!trig){key_val=99;}//若无按键触发则键值为99
-		key_value=key_val;//更新键值到全局变量（你也可以把这个函数改为int型然后return）
+if(!trig){key_val=99;}
+key_value=key_val;
 }
 
-//显示当前按键值（1-14），按下15计数值加一，按下16计数值减一
+
 void display_key (void)
 {
-	static int num_tick;//计数值
-	int dis_num;//显示的按键值
-		
-	if(key_value!=99)//若按键按下
-	{
-		if(key_value==15)//按下的按键为15
-		{
-			num_tick++;//数值自增
-			if(num_tick>=99){num_tick=99;}//数值限位
-		}
-		else if(key_value==16)//按下的按键为16
-		{
-			num_tick--;//数值自减
-			if(num_tick<=0){num_tick=0;}//数值限位
-		}
-		else 
-		{
-			dis_num=key_value;
-		}
-	}
-	//显示键值和计数值
-	SMG[0]=dis_num/10%10;
-	SMG[1]=dis_num%10;
-	SMG[2]=17;
-	SMG[3]=17;
-	SMG[4]=17;
-	SMG[5]=17;
-	SMG[6]=num_tick/10%10;
-	SMG[7]=num_tick%10;	
+static int num_tick;
+int dis_num;
+	
+if(key_value!=99)
+{
+if(key_value==15)
+{
+num_tick++;
+	if(num_tick>=99){num_tick=99;}
+}
+else if(key_value==16)
+{
+num_tick--;
+	if(num_tick<=0){num_tick=0;}
+}
+else 
+{
+dis_num=key_value;
+}
+}
+
+SMG[0]=dis_num/10%10;
+SMG[1]=dis_num%10;
+SMG[2]=17;
+SMG[3]=17;
+SMG[4]=17;
+SMG[5]=17;
+SMG[6]=num_tick/10%10;
+SMG[7]=num_tick%10;	
 }
 
 
 
 
-//频率采集定时器0初始化（一定记得把TMOD改成0x04）
+//频率采集
+
 void FrequenceInit(void)		//100微秒@12.000MHz
 {
 	AUXR |= 0x80;		//定时器时钟1T模式
@@ -345,24 +346,26 @@ void FrequenceInit(void)		//100微秒@12.000MHz
 }
 
 
-//频率采集函数（一定得放在定时器中断里并且定时器中断时间必须为1ms）
+
 void Frequence (void)
 {
-	static int tick_500ms;//500ms计时标志位
-	tick_500ms++;//计时标志自增
-	if(tick_500ms==500)
-	{
-		TR0=0;//停止定时器0计时
-		tick_500ms=0;//清零计时标志
-		fre=(TH0<<8)+TL0;//更新频率
-		TH0=0;TL0=0;TR0=1;//清除初始值并重新开始计时
-	}	
+static int tick_500ms;
+tick_500ms++;
+if(tick_500ms==500)
+{
+TR0=0;
+tick_500ms=0;
+fre=TH0<<8;
+fre+=TL0;
+TH0=0;
+TL0=0;
+TR0=1;	
+}	
 }
 
-//显示采集的频率
 void display_frequence (void)
 {
-	SMG[0]=15;//F
+	SMG[0]=15;
 	SMG[1]=16;
 	SMG[2]=16;
 	if(fre>9999){SMG[3]=fre/10000%10;}else{SMG[3]=16;}
@@ -378,58 +381,63 @@ void display_frequence (void)
 //任务1初始化
 void task1_init (void)
 {
-	//设置初始时间为23.59.58
-	config_ds1302(0x23,0x59,0x58);
+//设置初始时间
+config_ds1302(0x23,0x59,0x58);
 }
 
 //任务1循环
 void task1_loop (void)
 {
-	if(task1_tick>=10)
-	{
-		task1_tick=0;
-		display_ds1302();
-	}
+if(task1_tick>=10)
+{task1_tick=0;
+display_ds1302();
 }
+}
+
+
+
+
 
 //任务2循环
 void task2_loop (void)
 {
-	if(task2_tick>=500)
-	{
-		task2_tick=0;
-		display_temp();
-	}
+if(task2_tick>=500)
+{task2_tick=0;
+display_temp();
 }
+}
+
+
+
 
 //任务3初始化
 void task3_init (void)
 {
-	FrequenceInit();
+FrequenceInit();
 }
 
 //任务3循环
 void task3_loop (void)
 {
-	Frequence();
-	if(task3_tick>=10)
-	{
-		task3_tick=0;
-		display_frequence();
-	}
+Frequence();
+if(task3_tick>=10)
+{task3_tick=0;
+display_frequence();
 }
+}
+
+
 
 //任务4初始化
 void task4_init (void)
 {
-	//初始化按键初始电平
-	P30=1;P31=1;P32=1;P33=1;
+P30=1;P31=1;P32=1;P33=1;
 }
 
 //任务4循环
 void task4_loop (void)
 {
-	display_key();
+display_key();
 }
 
 
@@ -437,47 +445,44 @@ void task4_loop (void)
 //任务5循环
 void task5_loop (void)
 {
-	if(task5_tick>=10)
-	{
-		task5_tick=0;
-		display_distance ();
-	}
+if(task5_tick>=10)
+{task5_tick=0;
+display_distance ();
+}
 }
 
 //任务6初始化
 void task6_init (void)
 {
-	UartInit();//9600bps@12.000MHz
+UartInit();//9600bps@12.000MHz
 }
 
 //任务6循环
 void task6_loop (void)
 {
-	if(task6_tick>=1000)
-	{
-		task6_tick=0;
-		SMG[0]=17;
-		SMG[1]=17;
-		SMG[2]=17;
-		SMG[3]=17;
-		SMG[4]=17;
-		SMG[5]=17;
-		SMG[6]=17;
-		SMG[7]=17;
-		tempreture=(int)(read_temp()*100);//读取温度
-		printf("%d%d.%d%d\r\n",tempreture/1000%10,tempreture/100%10,tempreture/10%10,tempreture%10);//打印温度
-	}
+if(task6_tick>=1000)
+{task6_tick=0;
+SMG[0]=17;
+SMG[1]=17;
+SMG[2]=17;
+SMG[3]=17;
+SMG[4]=17;
+SMG[5]=17;
+SMG[6]=17;
+SMG[7]=17;
+tempreture=(int)(read_temp()*100);	
+printf("%d%d.%d%d\r\n",tempreture/1000%10,tempreture/100%10,tempreture/10%10,tempreture%10);
+}
 }
 
 
 //任务7循环
 void task7_loop (void)
 {
-	if(task7_tick>=200)
-	{
-		task7_tick=0;
-		display_raw_adc(0x01);
-	}
+if(task7_tick>=200)
+{task7_tick=0;
+display_raw_adc(0x01);
+}
 }
 
 //任务8循环
@@ -486,25 +491,24 @@ void task8_loop (void)
 static int count_8;	
 	
 if(task8_tick>=1000)
-{
-	task8_tick=0;
-	if(count_8==0){LED1=1;LED2=0;LED3=0;LED4=0;LED5=0;LED6=0;LED7=0;LED8=0;RELAY=1;}
-	if(count_8==1){LED1=0;LED2=1;LED3=0;LED4=0;LED5=0;LED6=0;LED7=0;LED8=0;RELAY=0;}
-	if(count_8==2){LED1=0;LED2=0;LED3=1;LED4=0;LED5=0;LED6=0;LED7=0;LED8=0;RELAY=1;}
-	if(count_8==3){LED1=0;LED2=0;LED3=0;LED4=1;LED5=0;LED6=0;LED7=0;LED8=0;RELAY=0;}
-	if(count_8==4){LED1=0;LED2=0;LED3=0;LED4=0;LED5=1;LED6=0;LED7=0;LED8=0;RELAY=1;}
-	if(count_8==5){LED1=0;LED2=0;LED3=0;LED4=0;LED5=0;LED6=1;LED7=0;LED8=0;RELAY=0;}
-	if(count_8==6){LED1=0;LED2=0;LED3=0;LED4=0;LED5=0;LED6=0;LED7=1;LED8=0;RELAY=1;}
-	if(count_8==7){LED1=0;LED2=0;LED3=0;LED4=0;LED5=0;LED6=0;LED7=0;LED8=1;RELAY=0;}
-	SMG[0]=17;
-	SMG[1]=17;
-	SMG[2]=17;
-	SMG[3]=17;
-	SMG[4]=17;
-	SMG[5]=17;
-	SMG[6]=17;
-	SMG[7]=count_8%10;
-	count_8++;if(count_8==8){count_8=0;}
+{task8_tick=0;
+if(count_8==0){LED1=1;LED2=0;LED3=0;LED4=0;LED5=0;LED6=0;LED7=0;LED8=0;RELAY=1;}
+if(count_8==1){LED1=0;LED2=1;LED3=0;LED4=0;LED5=0;LED6=0;LED7=0;LED8=0;RELAY=0;}
+if(count_8==2){LED1=0;LED2=0;LED3=1;LED4=0;LED5=0;LED6=0;LED7=0;LED8=0;RELAY=1;}
+if(count_8==3){LED1=0;LED2=0;LED3=0;LED4=1;LED5=0;LED6=0;LED7=0;LED8=0;RELAY=0;}
+if(count_8==4){LED1=0;LED2=0;LED3=0;LED4=0;LED5=1;LED6=0;LED7=0;LED8=0;RELAY=1;}
+if(count_8==5){LED1=0;LED2=0;LED3=0;LED4=0;LED5=0;LED6=1;LED7=0;LED8=0;RELAY=0;}
+if(count_8==6){LED1=0;LED2=0;LED3=0;LED4=0;LED5=0;LED6=0;LED7=1;LED8=0;RELAY=1;}
+if(count_8==7){LED1=0;LED2=0;LED3=0;LED4=0;LED5=0;LED6=0;LED7=0;LED8=1;RELAY=0;}
+SMG[0]=17;
+SMG[1]=17;
+SMG[2]=17;
+SMG[3]=17;
+SMG[4]=17;
+SMG[5]=17;
+SMG[6]=17;
+SMG[7]=count_8%10;
+count_8++;if(count_8==8){count_8=0;}
 }
 }
 
@@ -512,126 +516,139 @@ if(task8_tick>=1000)
 //任务9初始化
 void task9_init (void)
 {
-	write_24c02(0x01,0x05);
-	Delay4ms();
+write_24c02(0x01,0x05);
+Delay4ms();
 }
 
 //任务9循环
 void task9_loop (void)
 {
-	if(task9_tick>=1000)
-	{
-		task9_tick=0;
-		display_24c02 (0x01);
-	}
+if(task9_tick>=1000)
+{task9_tick=0;
+display_24c02 (0x01);
+}
 }
 
 
 //控制任务切换
 void task_control_center (void)
 {
-	read_key ();//读取键盘
-	if(key_value==14)//当14按下时
-	{
-		TASK_RUN++;init_flag=1;//切换模式并让初始化重新开始
-	}
-	if(TASK_RUN>=10){TASK_RUN=1;}//模式切换限位
+read_key ();//读取键盘
+if(key_value==14)
+{
+TASK_RUN++;init_flag=1;
+}
+if(TASK_RUN>=10){TASK_RUN=1;}	
+	
 }
 
 
 
 int main (void)
 {
-	//关闭外设
-	P2=0X80;P0=0XFF;P2=0X00;
-	P2=0XA0;P0=0X00;P2=0X00;
-
-	//任务定时器初始化
-	Timer2Init();
+//关闭外设
+P2=0X80;P0=0XFF;P2=0X00;
+P2=0XA0;P0=0X00;P2=0X00;
 	
-		
-	while(1)
-	{
-		
-		if(init_flag)//若初始化flag为1则执行初始化操作
-		{
-		//非任务6关闭定时器1（关闭串口）
-		if(TASK_RUN!=6)
-		{
-			TR1=0;
-		}		
-		//非任务8关闭无关外设
-		if(TASK_RUN!=8)
-		{
-			P2=0X80;P0=0XFF;P2=0X00;
-			P2=0XA0;P0=0X00;P2=0X00;
-		}		
-		//任务1初始化	
-		if(TASK_RUN==1){task1_init ();}	
-		//任务3初始化	
-		if(TASK_RUN==3){task3_init ();}
-		//任务4初始化	
-		if(TASK_RUN==4){task4_init ();}
-		//任务6初始化	
-		if(TASK_RUN==6){task6_init ();}
-		//任务9初始化	
-		if(TASK_RUN==9){task9_init ();}
-		init_flag=0;//置零初始化标志位
-		}	
-				
-		//任务1循环	
-		if(TASK_RUN==1){task1_loop();}
-		//任务2循环	
-		if(TASK_RUN==2){task2_loop();}
 
-		//任务3只能在中断中运行
+//任务定时器初始化
+Timer2Init();	
+	
+while(1)
+{
+	
+if(init_flag)
+{
+//非任务6关闭定时器1
+if(TASK_RUN!=6)
+{
+TR1=0;
+}		
+	
+//非任务8关闭外设
+if(TASK_RUN!=8)
+{
+P2=0X80;P0=0XFF;P2=0X00;
+P2=0XA0;P0=0X00;P2=0X00;
+}		
+	
+	
+	
+//任务1初始化	
+if(TASK_RUN==1){task1_init ();}
+	
+//任务3初始化	
+if(TASK_RUN==3){task3_init ();}
 
-		//任务4循环	
-		if(TASK_RUN==4){task4_loop();}
-		//任务5循环	
-		if(TASK_RUN==5){task5_loop();}
-		//任务6循环	
-		if(TASK_RUN==6){task6_loop();}
-		//任务7循环	
-		if(TASK_RUN==7){task7_loop();}
-		//任务8循环	
-		if(TASK_RUN==8){task8_loop();}
-		//任务9循环	
-		if(TASK_RUN==9){task9_loop();}
-			
-		task_control_center ();//任务切换中心
-	}	
+//任务4初始化	
+if(TASK_RUN==4){task4_init ();}
+
+//任务6初始化	
+if(TASK_RUN==6){task6_init ();}
+
+//任务9初始化	
+if(TASK_RUN==9){task9_init ();}
+
+
+init_flag=0;
+}	
+	
+	
+//任务1循环	
+if(TASK_RUN==1){task1_loop();}
+//任务2循环	
+if(TASK_RUN==2){task2_loop();}
+//任务4循环	
+if(TASK_RUN==4){task4_loop();}
+//任务5循环	
+if(TASK_RUN==5){task5_loop();}
+//任务6循环	
+if(TASK_RUN==6){task6_loop();}
+//任务7循环	
+if(TASK_RUN==7){task7_loop();}
+//任务8循环	
+if(TASK_RUN==8){task8_loop();}
+//任务9循环	
+if(TASK_RUN==9){task9_loop();}
+	
+task_control_center ();
+
+}	
 }
 
-//定时器中断回调函数（为什么是中断12，在范例程序里面可以找到定时器2的中断就是12）
+
+
+
+
 void server (void) interrupt 12
 {
-	//数码管刷新部分以及基础控制部分
-	static unsigned char tick_8ms;//数码管计时器
-	tick_8ms++;if(tick_8ms==8){tick_8ms=0;}//数码管计时到8ms重置（使其一直在0-7循环）
-	smg(tick_8ms,SMG[tick_8ms]);//给数码管0-7刷新对应SMG[0]-SMG[7]的内容
-	BASIC();//基础LED、蜂鸣器、继电器控制
+//数码管刷新部分以及基础控制部分
+static unsigned char tick_8ms;
+tick_8ms++;if(tick_8ms==8){tick_8ms=0;}
+smg(tick_8ms,SMG[tick_8ms]);
+BASIC ();
 
-	//任务1计数器自增，以及防止溢出
-	task1_tick++;if(task1_tick>2000){task1_tick=0;}
-	//任务2计数器自增，以及防止溢出
-	task2_tick++;if(task2_tick>2000){task2_tick=0;}
-	//任务3计数器自增，以及防止溢出
-	task3_tick++;if(task3_tick>2000){task3_tick=0;}
-	//任务4计数器自增，以及防止溢出
-	task4_tick++;if(task4_tick>2000){task4_tick=0;}
-	//任务5计数器自增，以及防止溢出
-	task5_tick++;if(task5_tick>2000){task5_tick=0;}
-	//任务6计数器自增，以及防止溢出
-	task6_tick++;if(task6_tick>2000){task6_tick=0;}
-	//任务7计数器自增，以及防止溢出
-	task7_tick++;if(task7_tick>2000){task7_tick=0;}
-	//任务8计数器自增，以及防止溢出
-	task8_tick++;if(task8_tick>2000){task8_tick=0;}
-	//任务9计数器自增，以及防止溢出
-	task9_tick++;if(task9_tick>2000){task9_tick=0;}
+//任务1计数器自增，以及防止溢出
+task1_tick++;if(task1_tick>2000){task1_tick=0;}
+//任务2计数器自增，以及防止溢出
+task2_tick++;if(task2_tick>2000){task2_tick=0;}
+//任务3计数器自增，以及防止溢出
+task3_tick++;if(task3_tick>2000){task3_tick=0;}
+//任务4计数器自增，以及防止溢出
+task4_tick++;if(task4_tick>2000){task4_tick=0;}
+//任务5计数器自增，以及防止溢出
+task5_tick++;if(task5_tick>2000){task5_tick=0;}
+//任务6计数器自增，以及防止溢出
+task6_tick++;if(task6_tick>2000){task6_tick=0;}
+//任务7计数器自增，以及防止溢出
+task7_tick++;if(task7_tick>2000){task7_tick=0;}
+//任务8计数器自增，以及防止溢出
+task8_tick++;if(task8_tick>2000){task8_tick=0;}
+//任务9计数器自增，以及防止溢出
+task9_tick++;if(task9_tick>2000){task9_tick=0;}
 
-	//任务3循环	
-	if(TASK_RUN==3){task3_loop();}
+
+//任务3循环	
+if(TASK_RUN==3){task3_loop();}
 }
 
