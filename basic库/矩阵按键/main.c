@@ -38,58 +38,38 @@ void key_task (void)//按键按下执行的任务
 }
 
 
-unsigned char read_keyboard (void)//返回读取到的按键键值若无按键按下则返回99
-{
-static unsigned char keyboard_tick;//轮询标志位
-unsigned char	key_val,key_trig=0;//键值暂存，触发标志
 
-key_trig=0;	//清零触发
-	
-if(keyboard_tick==0)
+//按键读取（不要把它放定时器里，在按键按下时会重复执行key_task()）
+unsigned char  read_keyboard (void)
 {
-P30=0;P31=1;P32=1;P33=1;
-if(P44==0){while(!P44){key_task();}key_val=0;key_trig=1;}	
-if(P42==0){while(!P42){key_task();}key_val=1;key_trig=1;}	
-if(P35==0){while(!P35){key_task();}key_val=2;key_trig=1;}	
-if(P34==0){while(!P34){key_task();}key_val=3;key_trig=1;}	
-}	
+	bit trig=0;//按键触发标志位
+	unsigned char key_val;//键值暂存位
+	trig=0;//触发标志位置零（可以不加）
+	P44=0;P42=1;P35=1;P34=1;//扫描第一列
+		if(P30==0){while(!P30){key_task();}trig=1;key_val=1;}
+		if(P31==0){while(!P31){key_task();}trig=1;key_val=5;}	
+		if(P32==0){while(!P32){key_task();}trig=1;key_val=9;}	
+		if(P33==0){while(!P33){key_task();}trig=1;key_val=13;}
+	P44=1;P42=0;P35=1;P34=1;//扫描第二列
+		if(P30==0){while(!P30){key_task();}trig=1;key_val=2;}
+		if(P31==0){while(!P31){key_task();}trig=1;key_val=6;}	
+		if(P32==0){while(!P32){key_task();}trig=1;key_val=10;}	
+		if(P33==0){while(!P33){key_task();}trig=1;key_val=14;}
+	P44=1;P42=1;P35=0;P34=1;//扫描第三列
+		if(P30==0){while(!P30){key_task();}trig=1;key_val=3;}
+		if(P31==0){while(!P31){key_task();}trig=1;key_val=7;}	
+		if(P32==0){while(!P32){key_task();}trig=1;key_val=11;}	
+		if(P33==0){while(!P33){key_task();}trig=1;key_val=15;}
+	P44=1;P42=1;P35=1;P34=0;//扫描第四列
+		if(P30==0){while(!P30){key_task();}trig=1;key_val=4;}
+		if(P31==0){while(!P31){key_task();}trig=1;key_val=8;}	
+		if(P32==0){while(!P32){key_task();}trig=1;key_val=12;}	
+		if(P33==0){while(!P33){key_task();}trig=1;key_val=16;}
 
-
-if(keyboard_tick==1)
-{
-P30=1;P31=0;P32=1;P33=1;	
-if(P44==0){while(!P44){key_task();}key_val=4;key_trig=1;}	
-if(P42==0){while(!P42){key_task();}key_val=5;key_trig=1;}	
-if(P35==0){while(!P35){key_task();}key_val=6;key_trig=1;}	
-if(P34==0){while(!P34){key_task();}key_val=7;key_trig=1;}	
+		if(!trig){key_val=99;}//若无按键触发则键值为99
+		return key_val;//更新键值
 }
 
-if(keyboard_tick==2)
-{
-P30=1;P31=1;P32=0;P33=1;
-if(P44==0){while(!P44){key_task();}key_val=8;key_trig=1;}	
-if(P42==0){while(!P42){key_task();}key_val=9;key_trig=1;}	
-if(P35==0){while(!P35){key_task();}key_val=10;key_trig=1;}
-if(P34==0){while(!P34){key_task();}key_val=11;key_trig=1;}	
-}
-
-if(keyboard_tick==3)
-{
-P30=1;P31=1;P32=1;P33=0;
-if(P44==0){while(!P44){key_task();}key_val=12;key_trig=1;}	
-if(P42==0){while(!P42){key_task();}key_val=13;key_trig=1;}	
-if(P35==0){while(!P35){key_task();}key_val=14;key_trig=1;}
-if(P34==0){while(!P34){key_task();}key_val=15;key_trig=1;}	
-
-}
-keyboard_tick=keyboard_tick+1;//轮询键盘
-
-if(keyboard_tick==4){keyboard_tick=0;}
-
-
-if(key_trig){return key_val;}//如果触发则返回键值
-else{return 99;}//如果未触发则返回99
-}
 
 void task_schedule (void)
 {
@@ -98,14 +78,11 @@ void task_schedule (void)
 		tick_2ms=0;
 		key_value=read_keyboard();//读取键值
 	}
-
 }
-
 
 
 int main (void)
 {
-int key_num;	
 P2=0X80;P0=0XFF;P2=0X00;//关闭LED外设
 P2=0XA0;P0=0X00;P2=0X00;//关闭继电器蜂鸣器外设
 P34=1;P35=1;P42=1;P44=1;//初始化按键引脚
@@ -113,7 +90,8 @@ Timer1Init();//任务调度定时器初始化
 	while(1)
 	{	
 		task_schedule();
-		if(key_value==1){SMG[0]=key_value;}	//按键触发改变键值
+				key_value=read_keyboard();//读取键值
+		if(key_value!=99){SMG[0]=key_value;}	//按键触发改变键值
 	}
 		
 }

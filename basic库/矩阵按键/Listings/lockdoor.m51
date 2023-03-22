@@ -1,4 +1,4 @@
-BL51 BANKED LINKER/LOCATER V6.22                                                        02/15/2023  13:31:14  PAGE 1
+BL51 BANKED LINKER/LOCATER V6.22                                                        03/23/2023  04:13:56  PAGE 1
 
 
 BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
@@ -22,9 +22,11 @@ LINK MAP OF MODULE:  .\Objects\lockdoor (MAIN)
 
             * * * * * * *   D A T A   M E M O R Y   * * * * * * *
             REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
-            DATA    0008H     000CH     UNIT         ?DT?MAIN
-            DATA    0014H     0002H     UNIT         _DATA_GROUP_
-            IDATA   0016H     0001H     UNIT         ?STACK
+            DATA    0008H     000BH     UNIT         ?DT?MAIN
+                    0013H     000DH                  *** GAP ***
+            BIT     0020H.0   0000H.1   UNIT         _BIT_GROUP_
+                    0020H.1   0000H.7                *** GAP ***
+            IDATA   0021H     0001H     UNIT         ?STACK
 
             * * * * * * *   C O D E   M E M O R Y   * * * * * * *
             CODE    0000H     0003H     ABSOLUTE     
@@ -32,21 +34,21 @@ LINK MAP OF MODULE:  .\Objects\lockdoor (MAIN)
             CODE    0018H     0001H     UNIT         ?PR?KEY_TASK?MAIN
                     0019H     0002H                  *** GAP ***
             CODE    001BH     0003H     ABSOLUTE     
-            CODE    001EH     013BH     UNIT         ?PR?READ_KEYBOARD?MAIN
-            CODE    0159H     008CH     UNIT         ?C_C51STARTUP
-            CODE    01E5H     0038H     UNIT         ?PR?SERVER?MAIN
-            CODE    021DH     0033H     UNIT         ?CO?MAIN
-            CODE    0250H     002FH     UNIT         ?PR?MAIN?MAIN
-            CODE    027FH     001FH     UNIT         ?PR?_SMG?MAIN
-            CODE    029EH     0010H     UNIT         ?PR?TASK_SCHEDULE?MAIN
-            CODE    02AEH     0004H     UNIT         ?C_INITSEG
+            CODE    001EH     011AH     UNIT         ?PR?READ_KEYBOARD?MAIN
+            CODE    0138H     008CH     UNIT         ?C_C51STARTUP
+            CODE    01C4H     0038H     UNIT         ?PR?SERVER?MAIN
+            CODE    01FCH     0033H     UNIT         ?CO?MAIN
+            CODE    022FH     0030H     UNIT         ?PR?MAIN?MAIN
+            CODE    025FH     001FH     UNIT         ?PR?_SMG?MAIN
+            CODE    027EH     0010H     UNIT         ?PR?TASK_SCHEDULE?MAIN
+            CODE    028EH     0004H     UNIT         ?C_INITSEG
 
 
 
 OVERLAY MAP OF MODULE:   .\Objects\lockdoor (MAIN)
 
 
-SEGMENT                          DATA_GROUP 
+SEGMENT                           BIT_GROUP 
   +--> CALLED SEGMENT          START    LENGTH
 ----------------------------------------------
 ?PR?SERVER?MAIN                -----    -----
@@ -57,21 +59,22 @@ SEGMENT                          DATA_GROUP
 
 *** NEW ROOT ***************************************************
 
+BL51 BANKED LINKER/LOCATER V6.22                                                      03/23/2023  04:13:56  PAGE 2
+
+
 ?C_C51STARTUP                  -----    -----
   +--> ?PR?MAIN?MAIN
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/15/2023  13:31:14  PAGE 2
-
-
   +--> ?C_INITSEG
 
-?PR?MAIN?MAIN                  0014H    0002H
+?PR?MAIN?MAIN                  -----    -----
   +--> ?PR?TIMER1INIT?MAIN
   +--> ?PR?TASK_SCHEDULE?MAIN
+  +--> ?PR?READ_KEYBOARD?MAIN
 
 ?PR?TASK_SCHEDULE?MAIN         -----    -----
   +--> ?PR?READ_KEYBOARD?MAIN
 
-?PR?READ_KEYBOARD?MAIN         -----    -----
+?PR?READ_KEYBOARD?MAIN         0020H.0  0000H.1
   +--> ?PR?KEY_TASK?MAIN
 
 
@@ -93,13 +96,13 @@ SYMBOL TABLE OF MODULE:  .\Objects\lockdoor (MAIN)
   D:00E8H         PUBLIC        P6
   D:00F8H         PUBLIC        P7
   D:00A8H         PUBLIC        IE
-  C:0248H         PUBLIC        T_COM
+  C:0227H         PUBLIC        T_COM
   D:00B8H         PUBLIC        IP
-  C:01E5H         PUBLIC        server
-  D:0009H         PUBLIC        tick_2ms
+  C:01C4H         PUBLIC        server
+  D:0008H         PUBLIC        tick_2ms
   D:00D8H         PUBLIC        CCON
-  C:0250H         PUBLIC        main
-  D:000AH         PUBLIC        tick_8ms
+  C:022FH         PUBLIC        main
+  D:0009H         PUBLIC        tick_8ms
   B:00B0H.0       PUBLIC        P30
   D:0098H         PUBLIC        SCON
   B:00B0H.1       PUBLIC        P31
@@ -112,32 +115,32 @@ SYMBOL TABLE OF MODULE:  .\Objects\lockdoor (MAIN)
   B:00C0H.4       PUBLIC        P44
   B:00B0H.5       PUBLIC        P35
   D:008EH         PUBLIC        AUXR
-  C:027FH         PUBLIC        _smg
+  C:025FH         PUBLIC        _smg
   B:00A8H.3       PUBLIC        ET1
-  D:000BH         PUBLIC        key_value
+  D:000AH         PUBLIC        key_value
   B:0088H.7       PUBLIC        TF1
+BL51 BANKED LINKER/LOCATER V6.22                                                      03/23/2023  04:13:56  PAGE 3
+
+
   C:0003H         PUBLIC        Timer1Init
   D:008DH         PUBLIC        TH1
-  C:021DH         PUBLIC        t_display
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/15/2023  13:31:14  PAGE 3
-
-
+  C:01FCH         PUBLIC        t_display
   D:008BH         PUBLIC        TL1
   C:001EH         PUBLIC        read_keyboard
   B:0088H.6       PUBLIC        TR1
   C:0018H         PUBLIC        key_task
-  D:000CH         PUBLIC        SMG
-  C:029EH         PUBLIC        task_schedule
+  D:000BH         PUBLIC        SMG
+  C:027EH         PUBLIC        task_schedule
   D:00D0H         PUBLIC        PSW
   -------         PROC          _SMG
   D:0007H         SYMBOL        duan
   D:0005H         SYMBOL        wei
-  C:027FH         LINE#         16
-  C:027FH         LINE#         17
-  C:027FH         LINE#         18
-  C:0282H         LINE#         19
-  C:028FH         LINE#         20
-  C:029DH         LINE#         21
+  C:025FH         LINE#         16
+  C:025FH         LINE#         17
+  C:025FH         LINE#         18
+  C:0262H         LINE#         19
+  C:026FH         LINE#         20
+  C:027DH         LINE#         21
   -------         ENDPROC       _SMG
   -------         PROC          TIMER1INIT
   C:0003H         LINE#         23
@@ -159,92 +162,72 @@ SYMBOL TABLE OF MODULE:  .\Objects\lockdoor (MAIN)
   -------         ENDPROC       KEY_TASK
   -------         PROC          READ_KEYBOARD
   -------         DO            
-  D:0008H         SYMBOL        keyboard_tick
-  D:0006H         SYMBOL        key_val
-  D:0007H         SYMBOL        key_trig
+  B:0020H.0       SYMBOL        trig
+  D:0007H         SYMBOL        key_val
   -------         ENDDO         
-  C:001EH         LINE#         41
-  C:001EH         LINE#         42
+  C:001EH         LINE#         43
   C:001EH         LINE#         44
-  C:0020H         LINE#         46
-  C:0020H         LINE#         48
-  C:0024H         LINE#         49
-  C:0024H         LINE#         50
-  C:002CH         LINE#         51
-  C:003BH         LINE#         52
-  C:004AH         LINE#         53
-  C:0059H         LINE#         54
-  C:0068H         LINE#         55
-  C:0068H         LINE#         58
-  C:006EH         LINE#         59
-  C:006EH         LINE#         60
-  C:0076H         LINE#         61
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/15/2023  13:31:14  PAGE 4
+  C:001EH         LINE#         45
+  C:0020H         LINE#         47
+  C:0022H         LINE#         48
+  C:002AH         LINE#         49
+  C:0039H         LINE#         50
+  C:0048H         LINE#         51
+  C:0057H         LINE#         52
+  C:0066H         LINE#         53
+  C:006EH         LINE#         54
+  C:007DH         LINE#         55
+  C:008CH         LINE#         56
+  C:009BH         LINE#         57
+BL51 BANKED LINKER/LOCATER V6.22                                                      03/23/2023  04:13:56  PAGE 4
 
 
-  C:0085H         LINE#         62
-  C:0094H         LINE#         63
-  C:00A3H         LINE#         64
-  C:00B2H         LINE#         65
-  C:00B2H         LINE#         67
-  C:00B8H         LINE#         68
-  C:00B8H         LINE#         69
-  C:00C0H         LINE#         70
-  C:00CFH         LINE#         71
-  C:00DEH         LINE#         72
-  C:00EDH         LINE#         73
-  C:00FCH         LINE#         74
-  C:00FCH         LINE#         76
-  C:0102H         LINE#         77
-  C:0102H         LINE#         78
-  C:010AH         LINE#         79
-  C:0119H         LINE#         80
-  C:0128H         LINE#         81
-  C:0137H         LINE#         82
-  C:0146H         LINE#         84
-  C:0146H         LINE#         85
-  C:0148H         LINE#         87
-  C:0150H         LINE#         90
-  C:0156H         LINE#         91
-  C:0158H         LINE#         92
+  C:00AAH         LINE#         58
+  C:00B2H         LINE#         59
+  C:00C1H         LINE#         60
+  C:00D0H         LINE#         61
+  C:00DFH         LINE#         62
+  C:00EEH         LINE#         63
+  C:00F6H         LINE#         64
+  C:0105H         LINE#         65
+  C:0114H         LINE#         66
+  C:0123H         LINE#         67
+  C:0132H         LINE#         69
+  C:0137H         LINE#         70
+  C:0137H         LINE#         71
   -------         ENDPROC       READ_KEYBOARD
   -------         PROC          TASK_SCHEDULE
-  C:029EH         LINE#         94
-  C:029EH         LINE#         95
-  C:029EH         LINE#         96
-  C:02A5H         LINE#         97
-  C:02A5H         LINE#         98
-  C:02A8H         LINE#         99
-  C:02ADH         LINE#         100
-  C:02ADH         LINE#         102
+  C:027EH         LINE#         74
+  C:027EH         LINE#         75
+  C:027EH         LINE#         76
+  C:0285H         LINE#         77
+  C:0285H         LINE#         78
+  C:0288H         LINE#         79
+  C:028DH         LINE#         80
+  C:028DH         LINE#         81
   -------         ENDPROC       TASK_SCHEDULE
   -------         PROC          MAIN
-  -------         DO            
-  D:0014H         SYMBOL        key_num
-  -------         ENDDO         
-  C:0250H         LINE#         106
-  C:0250H         LINE#         107
-  C:0250H         LINE#         109
-  C:0259H         LINE#         110
-  C:0260H         LINE#         111
-  C:0268H         LINE#         112
-  C:026BH         LINE#         113
-  C:026BH         LINE#         114
-  C:026BH         LINE#         116
-  C:026EH         LINE#         117
-  C:027DH         LINE#         120
+  C:022FH         LINE#         84
+  C:022FH         LINE#         85
+  C:022FH         LINE#         86
+  C:0238H         LINE#         87
+  C:023FH         LINE#         88
+  C:0247H         LINE#         89
+  C:024AH         LINE#         90
+  C:024AH         LINE#         91
+  C:024AH         LINE#         92
+  C:024DH         LINE#         93
+  C:0252H         LINE#         94
+  C:025DH         LINE#         95
   -------         ENDPROC       MAIN
   -------         PROC          SERVER
-  C:01E5H         LINE#         124
-  C:01F6H         LINE#         126
-  C:0200H         LINE#         127
-  C:020CH         LINE#         128
-BL51 BANKED LINKER/LOCATER V6.22                                                      02/15/2023  13:31:14  PAGE 5
-
-
-  C:020EH         LINE#         129
+  C:01C4H         LINE#         99
+  C:01D5H         LINE#         101
+  C:01DFH         LINE#         102
+  C:01EBH         LINE#         103
+  C:01EDH         LINE#         104
   -------         ENDPROC       SERVER
   -------         ENDMOD        MAIN
 
-Program Size: data=23.0 xdata=0 code=688
+Program Size: data=20.1 xdata=0 code=656
 LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)
