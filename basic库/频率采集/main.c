@@ -80,6 +80,7 @@ void frequence_detect (void)
 		tick_500ms=0;
 		frequence=TH0<<8;
 		frequence+=TL0;
+		frequence*=2;
 		TH0=0;
 		TL0=0;
 		TR0=1;

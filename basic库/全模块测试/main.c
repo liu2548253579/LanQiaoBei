@@ -354,6 +354,7 @@ void Frequence (void)
 		TR0=0;//停止定时器0计时
 		tick_500ms=0;//清零计时标志
 		fre=(TH0<<8)+TL0;//更新频率
+		frequence*=2;//频率翻倍
 		TH0=0;TL0=0;TR0=1;//清除初始值并重新开始计时
 	}	
 }
