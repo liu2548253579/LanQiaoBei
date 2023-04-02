@@ -5,6 +5,7 @@
 #include "intrins.h"
 #include "stdio.h"
 
+
 #define TX P10
 #define RX P11
 
@@ -27,7 +28,6 @@ unsigned char SMG[8],key_value;//数码管，键值
 unsigned int task1_tick,task2_tick,task3_tick,task4_tick,task5_tick,task6_tick,task7_tick,task8_tick,task9_tick;//各个任务时间标志位
 int tempreture;//温度（乘了100倍）
 int fre;//频率
-
 
 
 //基础配置LED、蜂鸣器、继电器
@@ -94,7 +94,6 @@ char putchar (char c)
 	TI=0;//溢出标志位置零
 	return c;
 }
-
 
 
 
@@ -204,7 +203,6 @@ void Delay4ms()		//@12.000MHz
 
 
 
-
 //超声波测距初始化
 void CejuInit(void)		//12微秒@12.000MHz
 {
@@ -295,6 +293,7 @@ void read_key (void)
 		if(!trig){key_val=99;}//若无按键触发则键值为99
 		key_value=key_val;//更新键值到全局变量（你也可以把这个函数改为int型然后return）
 }
+
 
 //显示当前按键值（1-14），按下15计数值加一，按下16计数值减一
 void display_key (void)
@@ -603,9 +602,10 @@ int main (void)
 	}	
 }
 
+
 //定时器中断回调函数（为什么是中断12，在范例程序里面可以找到定时器2的中断就是12）
 void server (void) interrupt 12
-{
+{	
 	//数码管刷新部分以及基础控制部分
 	static unsigned char tick_8ms;//数码管计时器
 	tick_8ms++;if(tick_8ms==8){tick_8ms=0;}//数码管计时到8ms重置（使其一直在0-7循环）

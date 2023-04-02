@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   MAIN                                                                  02/23/2023 06:15:44 PAGE 1   
+C51 COMPILER V9.54   MAIN                                                                  03/23/2023 20:23:18 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
@@ -62,7 +62,7 @@ line level    source
   51   1        P0=0xff;//消隐
   52   1        P2=0xc0;P0=T_COM[wei];P2=0x00;//位选
   53   1        P2=0xe0;P0=~t_display[duan];P2=0x00;//段选
-C51 COMPILER V9.54   MAIN                                                                  02/23/2023 06:15:44 PAGE 2   
+C51 COMPILER V9.54   MAIN                                                                  03/23/2023 20:23:18 PAGE 2   
 
   54   1      }
   55          
@@ -126,7 +126,7 @@ line level    source
  113          {
  114   1        SMG[0]=Read_Ds1302_Byte(0X85)/16;//读取时间时高位
  115   1        SMG[1]=Read_Ds1302_Byte(0X85)%16;//读取时间时低位
-C51 COMPILER V9.54   MAIN                                                                  02/23/2023 06:15:44 PAGE 3   
+C51 COMPILER V9.54   MAIN                                                                  03/23/2023 20:23:18 PAGE 3   
 
  116   1        SMG[2]=17;//显示-
  117   1        SMG[3]=Read_Ds1302_Byte(0X83)/16;//读取时间分高位
@@ -190,7 +190,7 @@ line level    source
  175          //读取EEPROM（读取与写入最低要间隔4ms，且尽量避免长时间重复写入，这样做会损坏eeprom）
  176          void display_24c02 (unsigned char addr)
  177          {
-C51 COMPILER V9.54   MAIN                                                                  02/23/2023 06:15:44 PAGE 4   
+C51 COMPILER V9.54   MAIN                                                                  03/23/2023 20:23:18 PAGE 4   
 
  178   1        unsigned char memory;
  179   1        memory=read_24c02 (addr);
@@ -254,7 +254,7 @@ line level    source
  237   2          juli=999;//返回距离为999
  238   2        }
  239   1        else//接收到超声波并计算距离
-C51 COMPILER V9.54   MAIN                                                                  02/23/2023 06:15:44 PAGE 5   
+C51 COMPILER V9.54   MAIN                                                                  03/23/2023 20:23:18 PAGE 5   
 
  240   1        {
  241   2          juli=((TH0<<8)+TL0)*0.017;//距离=（总时长*速度）/2 （超声波实际走过的路径是距离的2倍所以要除二）
@@ -318,7 +318,7 @@ line level    source
  299          //显示当前按键值（1-14），按下15计数值加一，按下16计数值减一
  300          void display_key (void)
  301          {
-C51 COMPILER V9.54   MAIN                                                                  02/23/2023 06:15:44 PAGE 6   
+C51 COMPILER V9.54   MAIN                                                                  03/23/2023 20:23:18 PAGE 6   
 
  302   1        static int num_tick;//计数值
  303   1        int dis_num;//显示的按键值
@@ -382,7 +382,7 @@ line level    source
  361          
  362          //显示采集的频率
  363          void display_frequence (void)
-C51 COMPILER V9.54   MAIN                                                                  02/23/2023 06:15:44 PAGE 7   
+C51 COMPILER V9.54   MAIN                                                                  03/23/2023 20:23:18 PAGE 7   
 
  364          {
  365   1        SMG[0]=15;//F
@@ -446,7 +446,7 @@ line level    source
  423          void task4_init (void)
  424          {
  425   1        //初始化按键初始电平
-C51 COMPILER V9.54   MAIN                                                                  02/23/2023 06:15:44 PAGE 8   
+C51 COMPILER V9.54   MAIN                                                                  03/23/2023 20:23:18 PAGE 8   
 
  426   1        P30=1;P31=1;P32=1;P33=1;
  427   1      }
@@ -510,7 +510,7 @@ line level    source
  485          {
  486   1      static int count_8; 
  487   1        
-C51 COMPILER V9.54   MAIN                                                                  02/23/2023 06:15:44 PAGE 9   
+C51 COMPILER V9.54   MAIN                                                                  03/23/2023 20:23:18 PAGE 9   
 
  488   1      if(task8_tick>=1000)
  489   1      {
@@ -574,7 +574,7 @@ line level    source
  547   1        P2=0XA0;P0=0X00;P2=0X00;
  548   1      
  549   1        //任务定时器初始化
-C51 COMPILER V9.54   MAIN                                                                  02/23/2023 06:15:44 PAGE 10  
+C51 COMPILER V9.54   MAIN                                                                  03/23/2023 20:23:18 PAGE 10  
 
  550   1        Timer2Init();
  551   1        
@@ -632,40 +632,41 @@ line level    source
  603   2        } 
  604   1      }
  605          
- 606          //定时器中断回调函数（为什么是中断12，在范例程序里面可以找到定时器2的中断就是12）
- 607          void server (void) interrupt 12
- 608          {
- 609   1        //数码管刷新部分以及基础控制部分
- 610   1        static unsigned char tick_8ms;//数码管计时器
- 611   1        tick_8ms++;if(tick_8ms==8){tick_8ms=0;}//数码管计时到8ms重置（使其一直在0-7循环）
-C51 COMPILER V9.54   MAIN                                                                  02/23/2023 06:15:44 PAGE 11  
+ 606          
+ 607          //定时器中断回调函数（为什么是中断12，在范例程序里面可以找到定时器2的中断就是12）
+ 608          void server (void) interrupt 12
+ 609          { 
+ 610   1        //数码管刷新部分以及基础控制部分
+ 611   1        static unsigned char tick_8ms;//数码管计时器
+C51 COMPILER V9.54   MAIN                                                                  03/23/2023 20:23:18 PAGE 11  
 
- 612   1        smg(tick_8ms,SMG[tick_8ms]);//给数码管0-7刷新对应SMG[0]-SMG[7]的内容
- 613   1        BASIC();//基础LED、蜂鸣器、继电器控制
- 614   1      
- 615   1        //任务1计数器自增，以及防止溢出
- 616   1        task1_tick++;if(task1_tick>2000){task1_tick=0;}
- 617   1        //任务2计数器自增，以及防止溢出
- 618   1        task2_tick++;if(task2_tick>2000){task2_tick=0;}
- 619   1        //任务3计数器自增，以及防止溢出
- 620   1        task3_tick++;if(task3_tick>2000){task3_tick=0;}
- 621   1        //任务4计数器自增，以及防止溢出
- 622   1        task4_tick++;if(task4_tick>2000){task4_tick=0;}
- 623   1        //任务5计数器自增，以及防止溢出
- 624   1        task5_tick++;if(task5_tick>2000){task5_tick=0;}
- 625   1        //任务6计数器自增，以及防止溢出
- 626   1        task6_tick++;if(task6_tick>2000){task6_tick=0;}
- 627   1        //任务7计数器自增，以及防止溢出
- 628   1        task7_tick++;if(task7_tick>2000){task7_tick=0;}
- 629   1        //任务8计数器自增，以及防止溢出
- 630   1        task8_tick++;if(task8_tick>2000){task8_tick=0;}
- 631   1        //任务9计数器自增，以及防止溢出
- 632   1        task9_tick++;if(task9_tick>2000){task9_tick=0;}
- 633   1      
- 634   1        //任务3循环 
- 635   1        if(TASK_RUN==3){task3_loop();}
- 636   1      }
- 637          
+ 612   1        tick_8ms++;if(tick_8ms==8){tick_8ms=0;}//数码管计时到8ms重置（使其一直在0-7循环）
+ 613   1        smg(tick_8ms,SMG[tick_8ms]);//给数码管0-7刷新对应SMG[0]-SMG[7]的内容
+ 614   1        BASIC();//基础LED、蜂鸣器、继电器控制
+ 615   1      
+ 616   1        //任务1计数器自增，以及防止溢出
+ 617   1        task1_tick++;if(task1_tick>2000){task1_tick=0;}
+ 618   1        //任务2计数器自增，以及防止溢出
+ 619   1        task2_tick++;if(task2_tick>2000){task2_tick=0;}
+ 620   1        //任务3计数器自增，以及防止溢出
+ 621   1        task3_tick++;if(task3_tick>2000){task3_tick=0;}
+ 622   1        //任务4计数器自增，以及防止溢出
+ 623   1        task4_tick++;if(task4_tick>2000){task4_tick=0;}
+ 624   1        //任务5计数器自增，以及防止溢出
+ 625   1        task5_tick++;if(task5_tick>2000){task5_tick=0;}
+ 626   1        //任务6计数器自增，以及防止溢出
+ 627   1        task6_tick++;if(task6_tick>2000){task6_tick=0;}
+ 628   1        //任务7计数器自增，以及防止溢出
+ 629   1        task7_tick++;if(task7_tick>2000){task7_tick=0;}
+ 630   1        //任务8计数器自增，以及防止溢出
+ 631   1        task8_tick++;if(task8_tick>2000){task8_tick=0;}
+ 632   1        //任务9计数器自增，以及防止溢出
+ 633   1        task9_tick++;if(task9_tick>2000){task9_tick=0;}
+ 634   1      
+ 635   1        //任务3循环 
+ 636   1        if(TASK_RUN==3){task3_loop();}
+ 637   1      }
+ 638          
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
