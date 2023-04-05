@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   MAIN                                                                  03/23/2023 20:23:18 PAGE 1   
+C51 COMPILER V9.54   MAIN                                                                  04/05/2023 11:40:31 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
@@ -15,30 +15,30 @@ line level    source
    5          #include "intrins.h"
    6          #include "stdio.h"
    7          
-   8          #define TX P10
-   9          #define RX P11
-  10          
-  11          char TASK_RUN=1;//任务运行标志位（对应任务1-9）
-  12          bit init_flag=1;//初始化标志位
-  13          
+   8          
+   9          #define TX P10
+  10          #define RX P11
+  11          
+  12          char TASK_RUN=1;//任务运行标志位（对应任务1-9）
+  13          bit init_flag=1;//初始化标志位
   14          
-  15          unsigned char code t_display[]={                       //标准字库
-  16          //   0    1    2    3    4    5    6    7    8    9    A    B    C    D    E    F
-  17              0x3F,0x06,0x5B,0x4F,0x66,0x6D,0x7D,0x07,0x7F,0x6F,0x77,0x7C,0x39,0x5E,0x79,0x71,
-  18          //black  -     H    J    K    L    N    o   P    U     t    G    Q    r   M    y
-  19              0x00,0x40,0x76,0x1E,0x70,0x38,0x37,0x5C,0x73,0x3E,0x78,0x3d,0x67,0x50,0x37,0x6e,
-  20              0xBF,0x86,0xDB,0xCF,0xE6,0xED,0xFD,0x87,0xFF,0xEF,0x46};    //0. 1. 2. 3. 4. 5. 6. 7. 8. 9. -1
-  21          
-  22          unsigned char code T_COM[]={0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80};      //位码
-  23          
-  24          bit LED1,LED2,LED3,LED4,LED5,LED6,LED7,LED8,BUZZER,RELAY;//LED、蜂鸣器、继电器控制标志位
-  25          
-  26          unsigned char SMG[8],key_value;//数码管，键值
-  27          unsigned int task1_tick,task2_tick,task3_tick,task4_tick,task5_tick,task6_tick,task7_tick,task8_tick,task9
+  15          
+  16          unsigned char code t_display[]={                       //标准字库
+  17          //   0    1    2    3    4    5    6    7    8    9    A    B    C    D    E    F
+  18              0x3F,0x06,0x5B,0x4F,0x66,0x6D,0x7D,0x07,0x7F,0x6F,0x77,0x7C,0x39,0x5E,0x79,0x71,
+  19          //black  -     H    J    K    L    N    o   P    U     t    G    Q    r   M    y
+  20              0x00,0x40,0x76,0x1E,0x70,0x38,0x37,0x5C,0x73,0x3E,0x78,0x3d,0x67,0x50,0x37,0x6e,
+  21              0xBF,0x86,0xDB,0xCF,0xE6,0xED,0xFD,0x87,0xFF,0xEF,0x46};    //0. 1. 2. 3. 4. 5. 6. 7. 8. 9. -1
+  22          
+  23          unsigned char code T_COM[]={0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80};      //位码
+  24          
+  25          bit LED1,LED2,LED3,LED4,LED5,LED6,LED7,LED8,BUZZER,RELAY;//LED、蜂鸣器、继电器控制标志位
+  26          
+  27          unsigned char SMG[8],key_value;//数码管，键值
+  28          unsigned int task1_tick,task2_tick,task3_tick,task4_tick,task5_tick,task6_tick,task7_tick,task8_tick,task9
              -_tick;//各个任务时间标志位
-  28          int tempreture;//温度（乘了100倍）
-  29          int fre;//频率
-  30          
+  29          int tempreture;//温度（乘了100倍）
+  30          int fre;//频率
   31          
   32          
   33          //基础配置LED、蜂鸣器、继电器
@@ -62,7 +62,7 @@ line level    source
   51   1        P0=0xff;//消隐
   52   1        P2=0xc0;P0=T_COM[wei];P2=0x00;//位选
   53   1        P2=0xe0;P0=~t_display[duan];P2=0x00;//段选
-C51 COMPILER V9.54   MAIN                                                                  03/23/2023 20:23:18 PAGE 2   
+C51 COMPILER V9.54   MAIN                                                                  04/05/2023 11:40:31 PAGE 2   
 
   54   1      }
   55          
@@ -110,563 +110,562 @@ line level    source
   97          
   98          
   99          
- 100          
- 101          //配置DS1302时钟（写初始时间）
- 102          void config_ds1302 (unsigned char shi,unsigned char fen,unsigned char miao)
- 103          {
- 104   1        Write_Ds1302_Byte(0x8e,0x00);//关闭写保护
- 105   1        Write_Ds1302_Byte(0x80,miao);//写入时间秒
- 106   1        Write_Ds1302_Byte(0x82,fen);//写入时间分
- 107   1        Write_Ds1302_Byte(0x84,shi);//写入时间时
- 108   1        Write_Ds1302_Byte(0x8e,0x80);//开启写保护
- 109   1      }
- 110          
- 111          //显示DS1302的时间
- 112          void display_ds1302 (void)
- 113          {
- 114   1        SMG[0]=Read_Ds1302_Byte(0X85)/16;//读取时间时高位
- 115   1        SMG[1]=Read_Ds1302_Byte(0X85)%16;//读取时间时低位
-C51 COMPILER V9.54   MAIN                                                                  03/23/2023 20:23:18 PAGE 3   
+ 100          //配置DS1302时钟（写初始时间）
+ 101          void config_ds1302 (unsigned char shi,unsigned char fen,unsigned char miao)
+ 102          {
+ 103   1        Write_Ds1302_Byte(0x8e,0x00);//关闭写保护
+ 104   1        Write_Ds1302_Byte(0x80,miao);//写入时间秒
+ 105   1        Write_Ds1302_Byte(0x82,fen);//写入时间分
+ 106   1        Write_Ds1302_Byte(0x84,shi);//写入时间时
+ 107   1        Write_Ds1302_Byte(0x8e,0x80);//开启写保护
+ 108   1      }
+ 109          
+ 110          //显示DS1302的时间
+ 111          void display_ds1302 (void)
+ 112          {
+ 113   1        SMG[0]=Read_Ds1302_Byte(0X85)/16;//读取时间时高位
+ 114   1        SMG[1]=Read_Ds1302_Byte(0X85)%16;//读取时间时低位
+ 115   1        SMG[2]=17;//显示-
+C51 COMPILER V9.54   MAIN                                                                  04/05/2023 11:40:31 PAGE 3   
 
- 116   1        SMG[2]=17;//显示-
- 117   1        SMG[3]=Read_Ds1302_Byte(0X83)/16;//读取时间分高位
- 118   1        SMG[4]=Read_Ds1302_Byte(0X83)%16;//读取时间分低位
- 119   1        SMG[5]=17;//显示-
- 120   1        SMG[6]=Read_Ds1302_Byte(0X81)/16;//读取时间秒高位
- 121   1        SMG[7]=Read_Ds1302_Byte(0X81)%16;//读取时间秒低位
- 122   1      }
+ 116   1        SMG[3]=Read_Ds1302_Byte(0X83)/16;//读取时间分高位
+ 117   1        SMG[4]=Read_Ds1302_Byte(0X83)%16;//读取时间分低位
+ 118   1        SMG[5]=17;//显示-
+ 119   1        SMG[6]=Read_Ds1302_Byte(0X81)/16;//读取时间秒高位
+ 120   1        SMG[7]=Read_Ds1302_Byte(0X81)%16;//读取时间秒低位
+ 121   1      }
+ 122          
  123          
  124          
  125          
  126          
- 127          
- 128          //读取并显示温度
- 129          void display_temp (void)
- 130          {
- 131   1        tempreture=(int)(read_temp()*100);  //将温度扩大100倍
- 132   1        SMG[0]=17;
- 133   1        SMG[1]=17;
- 134   1        SMG[2]=17;
- 135   1        SMG[3]=17;
- 136   1        SMG[4]=tempreture/1000%10;//取实际温度十位
- 137   1        SMG[5]=(tempreture/100%10)+32;//取实际温度个位＋.
- 138   1        SMG[6]=tempreture/10%10;//取实际温度小数点第一位
- 139   1        SMG[7]=tempreture%10; //取实际温度小数点第二位
- 140   1      }
+ 127          //读取并显示温度
+ 128          void display_temp (void)
+ 129          {
+ 130   1        tempreture=(int)(read_temp()*100);  //将温度扩大100倍
+ 131   1        SMG[0]=17;
+ 132   1        SMG[1]=17;
+ 133   1        SMG[2]=17;
+ 134   1        SMG[3]=17;
+ 135   1        SMG[4]=tempreture/1000%10;//取实际温度十位
+ 136   1        SMG[5]=(tempreture/100%10)+32;//取实际温度个位＋.
+ 137   1        SMG[6]=tempreture/10%10;//取实际温度小数点第一位
+ 138   1        SMG[7]=tempreture%10; //取实际温度小数点第二位
+ 139   1      }
+ 140          
  141          
  142          
- 143          
- 144          //读取并显示原始ADC数据（0x01光敏电阻 0x03电位器RB2）
- 145          void display_raw_adc (unsigned char addr)
- 146          {
- 147   1        unsigned int vol;
- 148   1        vol=adc(addr);
- 149   1        SMG[0]=17;
- 150   1        SMG[1]=17;
- 151   1        SMG[2]=17;
- 152   1        SMG[3]=17;
- 153   1        SMG[4]=vol/1000%10;
- 154   1        SMG[5]=vol/100%10;
- 155   1        SMG[6]=vol/10%10;
- 156   1        SMG[7]=vol%10;
- 157   1      }
- 158          
- 159          //读取并显示电压（0x01光敏电阻 0x03电位器RB2）
- 160          void display_voltage (unsigned char addr)
- 161          {
- 162   1        unsigned int vol;
- 163   1        vol=(((float)adc(addr))/255)*500;//将温度转化为电压值且保留两位小数（0-255）->（0-5）
- 164   1        SMG[0]=17;
- 165   1        SMG[1]=17;
- 166   1        SMG[2]=17;
- 167   1        SMG[3]=17;
- 168   1        SMG[4]=vol/1000%10;
- 169   1        SMG[5]=(vol/100%10)+32;
- 170   1        SMG[6]=vol/10%10;
- 171   1        SMG[7]=vol%10;
- 172   1      }
+ 143          //读取并显示原始ADC数据（0x01光敏电阻 0x03电位器RB2）
+ 144          void display_raw_adc (unsigned char addr)
+ 145          {
+ 146   1        unsigned int vol;
+ 147   1        vol=adc(addr);
+ 148   1        SMG[0]=17;
+ 149   1        SMG[1]=17;
+ 150   1        SMG[2]=17;
+ 151   1        SMG[3]=17;
+ 152   1        SMG[4]=vol/1000%10;
+ 153   1        SMG[5]=vol/100%10;
+ 154   1        SMG[6]=vol/10%10;
+ 155   1        SMG[7]=vol%10;
+ 156   1      }
+ 157          
+ 158          //读取并显示电压（0x01光敏电阻 0x03电位器RB2）
+ 159          void display_voltage (unsigned char addr)
+ 160          {
+ 161   1        unsigned int vol;
+ 162   1        vol=(((float)adc(addr))/255)*500;//将温度转化为电压值且保留两位小数（0-255）->（0-5）
+ 163   1        SMG[0]=17;
+ 164   1        SMG[1]=17;
+ 165   1        SMG[2]=17;
+ 166   1        SMG[3]=17;
+ 167   1        SMG[4]=vol/1000%10;
+ 168   1        SMG[5]=(vol/100%10)+32;
+ 169   1        SMG[6]=vol/10%10;
+ 170   1        SMG[7]=vol%10;
+ 171   1      }
+ 172          
  173          
- 174          
- 175          //读取EEPROM（读取与写入最低要间隔4ms，且尽量避免长时间重复写入，这样做会损坏eeprom）
- 176          void display_24c02 (unsigned char addr)
- 177          {
-C51 COMPILER V9.54   MAIN                                                                  03/23/2023 20:23:18 PAGE 4   
+ 174          //读取EEPROM（读取与写入最低要间隔4ms，且尽量避免长时间重复写入，这样做会损坏eeprom）
+ 175          void display_24c02 (unsigned char addr)
+ 176          {
+ 177   1        unsigned char memory;
+C51 COMPILER V9.54   MAIN                                                                  04/05/2023 11:40:31 PAGE 4   
 
- 178   1        unsigned char memory;
- 179   1        memory=read_24c02 (addr);
- 180   1        SMG[0]=17;
- 181   1        SMG[1]=17;
- 182   1        SMG[2]=17;
- 183   1        SMG[3]=17;
- 184   1        SMG[4]=17;
- 185   1        SMG[5]=memory/100%10;
- 186   1        SMG[6]=memory/10%10;
- 187   1        SMG[7]=memory%10;
- 188   1      }
+ 178   1        memory=read_24c02 (addr);
+ 179   1        SMG[0]=17;
+ 180   1        SMG[1]=17;
+ 181   1        SMG[2]=17;
+ 182   1        SMG[3]=17;
+ 183   1        SMG[4]=17;
+ 184   1        SMG[5]=memory/100%10;
+ 185   1        SMG[6]=memory/10%10;
+ 186   1        SMG[7]=memory%10;
+ 187   1      }
+ 188          
  189          
- 190          
- 191          //写入24c02数据的4ms延时
- 192          void Delay4ms()   //@12.000MHz
- 193          {
- 194   1        unsigned char i, j;
- 195   1      
- 196   1        i = 47;
- 197   1        j = 174;
- 198   1        do
- 199   1        {
- 200   2          while (--j);
- 201   2        } while (--i);
- 202   1      }
+ 190          //写入24c02数据的4ms延时
+ 191          void Delay4ms()   //@12.000MHz
+ 192          {
+ 193   1        unsigned char i, j;
+ 194   1      
+ 195   1        i = 47;
+ 196   1        j = 174;
+ 197   1        do
+ 198   1        {
+ 199   2          while (--j);
+ 200   2        } while (--i);
+ 201   1      }
+ 202          
  203          
  204          
  205          
- 206          
- 207          
- 208          //超声波测距初始化
- 209          void CejuInit(void)   //12微秒@12.000MHz
- 210          {
- 211   1        AUXR &= 0x7F;   //定时器时钟12T模式
- 212   1        TMOD &= 0xF0;   //设置定时器模式
- 213   1        TL0 = 0xF4;   //设置定时初值
- 214   1        TH0 = 0xFF;   //设置定时初值
- 215   1        TF0 = 0;    //清除TF0标志
- 216   1        TR0 = 1;    //定时器0开始计时
- 217   1      }
- 218          
- 219          
- 220          //超声波距离测量
- 221          unsigned int ceju (void)
- 222          {
- 223   1        unsigned char times=10;//单次发射脉冲数量
- 224   1        unsigned int juli;//实际距离
- 225   1        CejuInit(); //初始化定时器0
- 226   1        TX=0;//关闭超声波发送
- 227   1        while(times--)//发送十个脉冲
- 228   1        {
- 229   2          while(!TF0);//等待定时器0溢出
- 230   2          TX=1;//发送超声波
- 231   2          TF0=0;//重置溢出标志位
- 232   2        }
- 233   1        TR0=0;TH0=0;TL0=0;TR0=1;//停止计时并清除定时器0初值后打开计时
- 234   1        while(RX&&!TF0);//等待接收信号或者超时导致定时器0溢出
- 235   1        if(TF0==1)//超时未接收到超声波
- 236   1        {
- 237   2          juli=999;//返回距离为999
- 238   2        }
- 239   1        else//接收到超声波并计算距离
-C51 COMPILER V9.54   MAIN                                                                  03/23/2023 20:23:18 PAGE 5   
+ 206          //超声波测距初始化
+ 207          void CejuInit(void)   //12微秒@12.000MHz
+ 208          {
+ 209   1        AUXR &= 0x7F;   //定时器时钟12T模式
+ 210   1        TMOD &= 0xF0;   //设置定时器模式
+ 211   1        TL0 = 0xF4;   //设置定时初值
+ 212   1        TH0 = 0xFF;   //设置定时初值
+ 213   1        TF0 = 0;    //清除TF0标志
+ 214   1        TR0 = 1;    //定时器0开始计时
+ 215   1      }
+ 216          
+ 217          
+ 218          //超声波距离测量
+ 219          unsigned int ceju (void)
+ 220          {
+ 221   1        unsigned char times=10;//单次发射脉冲数量
+ 222   1        unsigned int juli;//实际距离
+ 223   1        CejuInit(); //初始化定时器0
+ 224   1        TX=0;//关闭超声波发送
+ 225   1        while(times--)//发送十个脉冲
+ 226   1        {
+ 227   2          while(!TF0);//等待定时器0溢出
+ 228   2          TX=1;//发送超声波
+ 229   2          TF0=0;//重置溢出标志位
+ 230   2        }
+ 231   1        TR0=0;TH0=0;TL0=0;TR0=1;//停止计时并清除定时器0初值后打开计时
+ 232   1        while(RX&&!TF0);//等待接收信号或者超时导致定时器0溢出
+ 233   1        if(TF0==1)//超时未接收到超声波
+ 234   1        {
+ 235   2          juli=999;//返回距离为999
+ 236   2        }
+ 237   1        else//接收到超声波并计算距离
+ 238   1        {
+ 239   2          juli=((TH0<<8)+TL0)*0.017;//距离=（总时长*速度）/2 （超声波实际走过的路径是距离的2倍所以要除二）
+C51 COMPILER V9.54   MAIN                                                                  04/05/2023 11:40:31 PAGE 5   
 
- 240   1        {
- 241   2          juli=((TH0<<8)+TL0)*0.017;//距离=（总时长*速度）/2 （超声波实际走过的路径是距离的2倍所以要除二）
- 242   2        }
- 243   1        TR0=0;//停止计时
- 244   1        return juli;
- 245   1      }
- 246          
- 247          //显示超声波测距距离
- 248          void display_distance (void)
- 249          {
- 250   1        unsigned int distance;
- 251   1        distance=ceju();
- 252   1        SMG[0]=17;
- 253   1        SMG[1]=17;
- 254   1        SMG[2]=17;
- 255   1        SMG[3]=17;
- 256   1        SMG[4]=17;
- 257   1        SMG[5]=distance/100%10;
- 258   1        SMG[6]=distance/10%10;
- 259   1        SMG[7]=distance%10;
- 260   1      }
- 261          
- 262          void key_task (void)
- 263          {
- 264   1      
- 265   1      }
- 266          
- 267          
- 268          //按键读取（不要把它放定时器里，在按键按下时会重复执行key_task()）
- 269          void read_key (void)
- 270          {
- 271   1        bit trig=0;//按键触发标志位
- 272   1        unsigned char key_val;//键值暂存位
- 273   1        trig=0;//触发标志位置零（可以不加）
- 274   1        P44=0;P42=1;P35=1;P34=1;//扫描第一列
- 275   1          if(P30==0){while(!P30){key_task();}trig=1;key_val=1;}
- 276   1          if(P31==0){while(!P31){key_task();}trig=1;key_val=5;} 
- 277   1          if(P32==0){while(!P32){key_task();}trig=1;key_val=9;} 
- 278   1          if(P33==0){while(!P33){key_task();}trig=1;key_val=13;}
- 279   1        P44=1;P42=0;P35=1;P34=1;//扫描第二列
- 280   1          if(P30==0){while(!P30){key_task();}trig=1;key_val=2;}
- 281   1          if(P31==0){while(!P31){key_task();}trig=1;key_val=6;} 
- 282   1          if(P32==0){while(!P32){key_task();}trig=1;key_val=10;}  
- 283   1          if(P33==0){while(!P33){key_task();}trig=1;key_val=14;}
- 284   1        P44=1;P42=1;P35=0;P34=1;//扫描第三列
- 285   1          if(P30==0){while(!P30){key_task();}trig=1;key_val=3;}
- 286   1          if(P31==0){while(!P31){key_task();}trig=1;key_val=7;} 
- 287   1          if(P32==0){while(!P32){key_task();}trig=1;key_val=11;}  
- 288   1          if(P33==0){while(!P33){key_task();}trig=1;key_val=15;}
- 289   1        P44=1;P42=1;P35=1;P34=0;//扫描第四列
- 290   1          if(P30==0){while(!P30){key_task();}trig=1;key_val=4;}
- 291   1          if(P31==0){while(!P31){key_task();}trig=1;key_val=8;} 
- 292   1          if(P32==0){while(!P32){key_task();}trig=1;key_val=12;}  
- 293   1          if(P33==0){while(!P33){key_task();}trig=1;key_val=16;}
- 294   1      
- 295   1          if(!trig){key_val=99;}//若无按键触发则键值为99
- 296   1          key_value=key_val;//更新键值到全局变量（你也可以把这个函数改为int型然后return）
- 297   1      }
- 298          
- 299          //显示当前按键值（1-14），按下15计数值加一，按下16计数值减一
- 300          void display_key (void)
- 301          {
-C51 COMPILER V9.54   MAIN                                                                  03/23/2023 20:23:18 PAGE 6   
+ 240   2        }
+ 241   1        TR0=0;//停止计时
+ 242   1        return juli;
+ 243   1      }
+ 244          
+ 245          //显示超声波测距距离
+ 246          void display_distance (void)
+ 247          {
+ 248   1        unsigned int distance;
+ 249   1        distance=ceju();
+ 250   1        SMG[0]=17;
+ 251   1        SMG[1]=17;
+ 252   1        SMG[2]=17;
+ 253   1        SMG[3]=17;
+ 254   1        SMG[4]=17;
+ 255   1        SMG[5]=distance/100%10;
+ 256   1        SMG[6]=distance/10%10;
+ 257   1        SMG[7]=distance%10;
+ 258   1      }
+ 259          
+ 260          void key_task (void)
+ 261          {
+ 262   1      
+ 263   1      }
+ 264          
+ 265          
+ 266          //按键读取（不要把它放定时器里，在按键按下时会重复执行key_task()）
+ 267          void read_key (void)
+ 268          {
+ 269   1        bit trig=0;//按键触发标志位
+ 270   1        unsigned char key_val;//键值暂存位
+ 271   1        trig=0;//触发标志位置零（可以不加）
+ 272   1        P44=0;P42=1;P35=1;P34=1;//扫描第一列
+ 273   1          if(P30==0){while(!P30){key_task();}trig=1;key_val=1;}
+ 274   1          if(P31==0){while(!P31){key_task();}trig=1;key_val=5;} 
+ 275   1          if(P32==0){while(!P32){key_task();}trig=1;key_val=9;} 
+ 276   1          if(P33==0){while(!P33){key_task();}trig=1;key_val=13;}
+ 277   1        P44=1;P42=0;P35=1;P34=1;//扫描第二列
+ 278   1          if(P30==0){while(!P30){key_task();}trig=1;key_val=2;}
+ 279   1          if(P31==0){while(!P31){key_task();}trig=1;key_val=6;} 
+ 280   1          if(P32==0){while(!P32){key_task();}trig=1;key_val=10;}  
+ 281   1          if(P33==0){while(!P33){key_task();}trig=1;key_val=14;}
+ 282   1        P44=1;P42=1;P35=0;P34=1;//扫描第三列
+ 283   1          if(P30==0){while(!P30){key_task();}trig=1;key_val=3;}
+ 284   1          if(P31==0){while(!P31){key_task();}trig=1;key_val=7;} 
+ 285   1          if(P32==0){while(!P32){key_task();}trig=1;key_val=11;}  
+ 286   1          if(P33==0){while(!P33){key_task();}trig=1;key_val=15;}
+ 287   1        P44=1;P42=1;P35=1;P34=0;//扫描第四列
+ 288   1          if(P30==0){while(!P30){key_task();}trig=1;key_val=4;}
+ 289   1          if(P31==0){while(!P31){key_task();}trig=1;key_val=8;} 
+ 290   1          if(P32==0){while(!P32){key_task();}trig=1;key_val=12;}  
+ 291   1          if(P33==0){while(!P33){key_task();}trig=1;key_val=16;}
+ 292   1      
+ 293   1          if(!trig){key_val=99;}//若无按键触发则键值为99
+ 294   1          key_value=key_val;//更新键值到全局变量（你也可以把这个函数改为int型然后return）
+ 295   1      }
+ 296          
+ 297          
+ 298          //显示当前按键值（1-14），按下15计数值加一，按下16计数值减一
+ 299          void display_key (void)
+ 300          {
+ 301   1        static int num_tick;//计数值
+C51 COMPILER V9.54   MAIN                                                                  04/05/2023 11:40:31 PAGE 6   
 
- 302   1        static int num_tick;//计数值
- 303   1        int dis_num;//显示的按键值
- 304   1          
- 305   1        if(key_value!=99)//若按键按下
- 306   1        {
- 307   2          if(key_value==15)//按下的按键为15
- 308   2          {
- 309   3            num_tick++;//数值自增
- 310   3            if(num_tick>=99){num_tick=99;}//数值限位
- 311   3          }
- 312   2          else if(key_value==16)//按下的按键为16
- 313   2          {
- 314   3            num_tick--;//数值自减
- 315   3            if(num_tick<=0){num_tick=0;}//数值限位
- 316   3          }
- 317   2          else 
- 318   2          {
- 319   3            dis_num=key_value;
- 320   3          }
- 321   2        }
- 322   1        //显示键值和计数值
- 323   1        SMG[0]=dis_num/10%10;
- 324   1        SMG[1]=dis_num%10;
- 325   1        SMG[2]=17;
- 326   1        SMG[3]=17;
- 327   1        SMG[4]=17;
- 328   1        SMG[5]=17;
- 329   1        SMG[6]=num_tick/10%10;
- 330   1        SMG[7]=num_tick%10; 
- 331   1      }
+ 302   1        int dis_num;//显示的按键值
+ 303   1          
+ 304   1        if(key_value!=99)//若按键按下
+ 305   1        {
+ 306   2          if(key_value==15)//按下的按键为15
+ 307   2          {
+ 308   3            num_tick++;//数值自增
+ 309   3            if(num_tick>=99){num_tick=99;}//数值限位
+ 310   3          }
+ 311   2          else if(key_value==16)//按下的按键为16
+ 312   2          {
+ 313   3            num_tick--;//数值自减
+ 314   3            if(num_tick<=0){num_tick=0;}//数值限位
+ 315   3          }
+ 316   2          else 
+ 317   2          {
+ 318   3            dis_num=key_value;
+ 319   3          }
+ 320   2        }
+ 321   1        //显示键值和计数值
+ 322   1        SMG[0]=dis_num/10%10;
+ 323   1        SMG[1]=dis_num%10;
+ 324   1        SMG[2]=17;
+ 325   1        SMG[3]=17;
+ 326   1        SMG[4]=17;
+ 327   1        SMG[5]=17;
+ 328   1        SMG[6]=num_tick/10%10;
+ 329   1        SMG[7]=num_tick%10; 
+ 330   1      }
+ 331          
  332          
  333          
  334          
- 335          
- 336          //频率采集定时器0初始化（一定记得把TMOD改成0x04）
- 337          void FrequenceInit(void)    //100微秒@12.000MHz
- 338          {
- 339   1        AUXR |= 0x80;   //定时器时钟1T模式
- 340   1        TMOD = 0x04;    //设置定时器模式
- 341   1        TL0 = 0x50;   //设置定时初值
- 342   1        TH0 = 0xFB;   //设置定时初值
- 343   1        TF0 = 0;    //清除TF0标志
- 344   1        TR0 = 1;    //定时器0开始计时
- 345   1      }
+ 335          //频率采集定时器0初始化（一定记得把TMOD改成0x04）
+ 336          void FrequenceInit(void)    //100微秒@12.000MHz
+ 337          {
+ 338   1        AUXR |= 0x80;   //定时器时钟1T模式
+ 339   1        TMOD = 0x04;    //设置定时器模式
+ 340   1        TL0 = 0x50;   //设置定时初值
+ 341   1        TH0 = 0xFB;   //设置定时初值
+ 342   1        TF0 = 0;    //清除TF0标志
+ 343   1        TR0 = 1;    //定时器0开始计时
+ 344   1      }
+ 345          
  346          
- 347          
- 348          //频率采集函数（一定得放在定时器中断里并且定时器中断时间必须为1ms）
- 349          void Frequence (void)
- 350          {
- 351   1        static int tick_500ms;//500ms计时标志位
- 352   1        tick_500ms++;//计时标志自增
- 353   1        if(tick_500ms==500)
- 354   1        {
- 355   2          TR0=0;//停止定时器0计时
- 356   2          tick_500ms=0;//清零计时标志
- 357   2          fre=(TH0<<8)+TL0;//更新频率
- 358   2          TH0=0;TL0=0;TR0=1;//清除初始值并重新开始计时
- 359   2        } 
- 360   1      }
- 361          
- 362          //显示采集的频率
- 363          void display_frequence (void)
-C51 COMPILER V9.54   MAIN                                                                  03/23/2023 20:23:18 PAGE 7   
+ 347          //频率采集函数（一定得放在定时器中断里并且定时器中断时间必须为1ms）
+ 348          void Frequence (void)
+ 349          {
+ 350   1        static int tick_1s;//1s计时标志位
+ 351   1        tick_1s++;//计时标志自增
+ 352   1        if(tick_1s==1000)
+ 353   1        {
+ 354   2          TR0=0;//停止定时器0计时
+ 355   2          tick_1s=0;//清零计时标志
+ 356   2          fre=(TH0<<8)+TL0;//更新频率
+ 357   2          TH0=0;TL0=0;TR0=1;//清除初始值并重新开始计时
+ 358   2        } 
+ 359   1      }
+ 360          
+ 361          //显示采集的频率
+ 362          void display_frequence (void)
+ 363          {
+C51 COMPILER V9.54   MAIN                                                                  04/05/2023 11:40:31 PAGE 7   
 
- 364          {
- 365   1        SMG[0]=15;//F
- 366   1        SMG[1]=16;
- 367   1        SMG[2]=16;
- 368   1        if(fre>9999){SMG[3]=fre/10000%10;}else{SMG[3]=16;}
- 369   1        if(fre>999)SMG[4]=fre/1000%10;else{SMG[4]=16;}
- 370   1        if(fre>99)SMG[5]=fre/100%10;else{SMG[5]=16;}
- 371   1        if(fre>9)SMG[6]=fre/10%10;else{SMG[6]=16;}
- 372   1        if(fre>0)SMG[7]=fre%10;else{SMG[7]=16;}
- 373   1      }
+ 364   1        SMG[0]=15;//F
+ 365   1        SMG[1]=16;
+ 366   1        SMG[2]=16;
+ 367   1        if(fre>9999){SMG[3]=fre/10000%10;}else{SMG[3]=16;}
+ 368   1        if(fre>999)SMG[4]=fre/1000%10;else{SMG[4]=16;}
+ 369   1        if(fre>99)SMG[5]=fre/100%10;else{SMG[5]=16;}
+ 370   1        if(fre>9)SMG[6]=fre/10%10;else{SMG[6]=16;}
+ 371   1        if(fre>0)SMG[7]=fre%10;else{SMG[7]=16;}
+ 372   1      }
+ 373          
  374          
  375          
  376          
- 377          
- 378          //任务1初始化
- 379          void task1_init (void)
- 380          {
- 381   1        //设置初始时间为23.59.58
- 382   1        config_ds1302(0x23,0x59,0x58);
- 383   1      }
- 384          
- 385          //任务1循环
- 386          void task1_loop (void)
- 387          {
- 388   1        if(task1_tick>=10)
- 389   1        {
- 390   2          task1_tick=0;
- 391   2          display_ds1302();
- 392   2        }
- 393   1      }
- 394          
- 395          //任务2循环
- 396          void task2_loop (void)
- 397          {
- 398   1        if(task2_tick>=500)
- 399   1        {
- 400   2          task2_tick=0;
- 401   2          display_temp();
- 402   2        }
- 403   1      }
- 404          
- 405          //任务3初始化
- 406          void task3_init (void)
- 407          {
- 408   1        FrequenceInit();
- 409   1      }
- 410          
- 411          //任务3循环
- 412          void task3_loop (void)
- 413          {
- 414   1        Frequence();
- 415   1        if(task3_tick>=10)
- 416   1        {
- 417   2          task3_tick=0;
- 418   2          display_frequence();
- 419   2        }
- 420   1      }
- 421          
- 422          //任务4初始化
- 423          void task4_init (void)
- 424          {
- 425   1        //初始化按键初始电平
-C51 COMPILER V9.54   MAIN                                                                  03/23/2023 20:23:18 PAGE 8   
+ 377          //任务1初始化
+ 378          void task1_init (void)
+ 379          {
+ 380   1        //设置初始时间为23.59.58
+ 381   1        config_ds1302(0x23,0x59,0x58);
+ 382   1      }
+ 383          
+ 384          //任务1循环
+ 385          void task1_loop (void)
+ 386          {
+ 387   1        if(task1_tick>=10)
+ 388   1        {
+ 389   2          task1_tick=0;
+ 390   2          display_ds1302();
+ 391   2        }
+ 392   1      }
+ 393          
+ 394          //任务2循环
+ 395          void task2_loop (void)
+ 396          {
+ 397   1        if(task2_tick>=500)
+ 398   1        {
+ 399   2          task2_tick=0;
+ 400   2          display_temp();
+ 401   2        }
+ 402   1      }
+ 403          
+ 404          //任务3初始化
+ 405          void task3_init (void)
+ 406          {
+ 407   1        FrequenceInit();
+ 408   1      }
+ 409          
+ 410          //任务3循环
+ 411          void task3_loop (void)
+ 412          {
+ 413   1        Frequence();
+ 414   1        if(task3_tick>=10)
+ 415   1        {
+ 416   2          task3_tick=0;
+ 417   2          display_frequence();
+ 418   2        }
+ 419   1      }
+ 420          
+ 421          //任务4初始化
+ 422          void task4_init (void)
+ 423          {
+ 424   1        //初始化按键初始电平
+ 425   1        P30=1;P31=1;P32=1;P33=1;
+C51 COMPILER V9.54   MAIN                                                                  04/05/2023 11:40:31 PAGE 8   
 
- 426   1        P30=1;P31=1;P32=1;P33=1;
- 427   1      }
- 428          
- 429          //任务4循环
- 430          void task4_loop (void)
- 431          {
- 432   1        display_key();
- 433   1      }
+ 426   1      }
+ 427          
+ 428          //任务4循环
+ 429          void task4_loop (void)
+ 430          {
+ 431   1        display_key();
+ 432   1      }
+ 433          
  434          
  435          
- 436          
- 437          //任务5循环
- 438          void task5_loop (void)
- 439          {
- 440   1        if(task5_tick>=10)
- 441   1        {
- 442   2          task5_tick=0;
- 443   2          display_distance ();
- 444   2        }
- 445   1      }
- 446          
- 447          //任务6初始化
- 448          void task6_init (void)
- 449          {
- 450   1        UartInit();//9600bps@12.000MHz
- 451   1      }
- 452          
- 453          //任务6循环
- 454          void task6_loop (void)
- 455          {
- 456   1        if(task6_tick>=1000)
- 457   1        {
- 458   2          task6_tick=0;
- 459   2          SMG[0]=17;
- 460   2          SMG[1]=17;
- 461   2          SMG[2]=17;
- 462   2          SMG[3]=17;
- 463   2          SMG[4]=17;
- 464   2          SMG[5]=17;
- 465   2          SMG[6]=17;
- 466   2          SMG[7]=17;
- 467   2          tempreture=(int)(read_temp()*100);//读取温度
- 468   2          printf("%d%d.%d%d\r\n",tempreture/1000%10,tempreture/100%10,tempreture/10%10,tempreture%10);//打印温度
- 469   2        }
- 470   1      }
+ 436          //任务5循环
+ 437          void task5_loop (void)
+ 438          {
+ 439   1        if(task5_tick>=10)
+ 440   1        {
+ 441   2          task5_tick=0;
+ 442   2          display_distance ();
+ 443   2        }
+ 444   1      }
+ 445          
+ 446          //任务6初始化
+ 447          void task6_init (void)
+ 448          {
+ 449   1        UartInit();//9600bps@12.000MHz
+ 450   1      }
+ 451          
+ 452          //任务6循环
+ 453          void task6_loop (void)
+ 454          {
+ 455   1        if(task6_tick>=1000)
+ 456   1        {
+ 457   2          task6_tick=0;
+ 458   2          SMG[0]=17;
+ 459   2          SMG[1]=17;
+ 460   2          SMG[2]=17;
+ 461   2          SMG[3]=17;
+ 462   2          SMG[4]=17;
+ 463   2          SMG[5]=17;
+ 464   2          SMG[6]=17;
+ 465   2          SMG[7]=17;
+ 466   2          tempreture=(int)(read_temp()*100);//读取温度
+ 467   2          printf("%d%d.%d%d\r\n",tempreture/1000%10,tempreture/100%10,tempreture/10%10,tempreture%10);//打印温度
+ 468   2        }
+ 469   1      }
+ 470          
  471          
- 472          
- 473          //任务7循环
- 474          void task7_loop (void)
- 475          {
- 476   1        if(task7_tick>=200)
- 477   1        {
- 478   2          task7_tick=0;
- 479   2          display_raw_adc(0x01);
- 480   2        }
- 481   1      }
- 482          
- 483          //任务8循环
- 484          void task8_loop (void)
- 485          {
- 486   1      static int count_8; 
- 487   1        
-C51 COMPILER V9.54   MAIN                                                                  03/23/2023 20:23:18 PAGE 9   
+ 472          //任务7循环
+ 473          void task7_loop (void)
+ 474          {
+ 475   1        if(task7_tick>=200)
+ 476   1        {
+ 477   2          task7_tick=0;
+ 478   2          display_raw_adc(0x01);
+ 479   2        }
+ 480   1      }
+ 481          
+ 482          //任务8循环
+ 483          void task8_loop (void)
+ 484          {
+ 485   1      static int count_8; 
+ 486   1        
+ 487   1      if(task8_tick>=1000)
+C51 COMPILER V9.54   MAIN                                                                  04/05/2023 11:40:31 PAGE 9   
 
- 488   1      if(task8_tick>=1000)
- 489   1      {
- 490   2        task8_tick=0;
- 491   2        if(count_8==0){LED1=1;LED2=0;LED3=0;LED4=0;LED5=0;LED6=0;LED7=0;LED8=0;RELAY=1;}
- 492   2        if(count_8==1){LED1=0;LED2=1;LED3=0;LED4=0;LED5=0;LED6=0;LED7=0;LED8=0;RELAY=0;}
- 493   2        if(count_8==2){LED1=0;LED2=0;LED3=1;LED4=0;LED5=0;LED6=0;LED7=0;LED8=0;RELAY=1;}
- 494   2        if(count_8==3){LED1=0;LED2=0;LED3=0;LED4=1;LED5=0;LED6=0;LED7=0;LED8=0;RELAY=0;}
- 495   2        if(count_8==4){LED1=0;LED2=0;LED3=0;LED4=0;LED5=1;LED6=0;LED7=0;LED8=0;RELAY=1;}
- 496   2        if(count_8==5){LED1=0;LED2=0;LED3=0;LED4=0;LED5=0;LED6=1;LED7=0;LED8=0;RELAY=0;}
- 497   2        if(count_8==6){LED1=0;LED2=0;LED3=0;LED4=0;LED5=0;LED6=0;LED7=1;LED8=0;RELAY=1;}
- 498   2        if(count_8==7){LED1=0;LED2=0;LED3=0;LED4=0;LED5=0;LED6=0;LED7=0;LED8=1;RELAY=0;}
- 499   2        SMG[0]=17;
- 500   2        SMG[1]=17;
- 501   2        SMG[2]=17;
- 502   2        SMG[3]=17;
- 503   2        SMG[4]=17;
- 504   2        SMG[5]=17;
- 505   2        SMG[6]=17;
- 506   2        SMG[7]=count_8%10;
- 507   2        count_8++;if(count_8==8){count_8=0;}
- 508   2      }
- 509   1      }
+ 488   1      {
+ 489   2        task8_tick=0;
+ 490   2        if(count_8==0){LED1=1;LED2=0;LED3=0;LED4=0;LED5=0;LED6=0;LED7=0;LED8=0;RELAY=1;}
+ 491   2        if(count_8==1){LED1=0;LED2=1;LED3=0;LED4=0;LED5=0;LED6=0;LED7=0;LED8=0;RELAY=0;}
+ 492   2        if(count_8==2){LED1=0;LED2=0;LED3=1;LED4=0;LED5=0;LED6=0;LED7=0;LED8=0;RELAY=1;}
+ 493   2        if(count_8==3){LED1=0;LED2=0;LED3=0;LED4=1;LED5=0;LED6=0;LED7=0;LED8=0;RELAY=0;}
+ 494   2        if(count_8==4){LED1=0;LED2=0;LED3=0;LED4=0;LED5=1;LED6=0;LED7=0;LED8=0;RELAY=1;}
+ 495   2        if(count_8==5){LED1=0;LED2=0;LED3=0;LED4=0;LED5=0;LED6=1;LED7=0;LED8=0;RELAY=0;}
+ 496   2        if(count_8==6){LED1=0;LED2=0;LED3=0;LED4=0;LED5=0;LED6=0;LED7=1;LED8=0;RELAY=1;}
+ 497   2        if(count_8==7){LED1=0;LED2=0;LED3=0;LED4=0;LED5=0;LED6=0;LED7=0;LED8=1;RELAY=0;}
+ 498   2        SMG[0]=17;
+ 499   2        SMG[1]=17;
+ 500   2        SMG[2]=17;
+ 501   2        SMG[3]=17;
+ 502   2        SMG[4]=17;
+ 503   2        SMG[5]=17;
+ 504   2        SMG[6]=17;
+ 505   2        SMG[7]=count_8%10;
+ 506   2        count_8++;if(count_8==8){count_8=0;}
+ 507   2      }
+ 508   1      }
+ 509          
  510          
- 511          
- 512          //任务9初始化
- 513          void task9_init (void)
- 514          {
- 515   1        write_24c02(0x01,0x05);
- 516   1        Delay4ms();
- 517   1      }
- 518          
- 519          //任务9循环
- 520          void task9_loop (void)
- 521          {
- 522   1        if(task9_tick>=1000)
- 523   1        {
- 524   2          task9_tick=0;
- 525   2          display_24c02 (0x01);
- 526   2        }
- 527   1      }
+ 511          //任务9初始化
+ 512          void task9_init (void)
+ 513          {
+ 514   1        write_24c02(0x01,0x05);
+ 515   1        Delay4ms();
+ 516   1      }
+ 517          
+ 518          //任务9循环
+ 519          void task9_loop (void)
+ 520          {
+ 521   1        if(task9_tick>=1000)
+ 522   1        {
+ 523   2          task9_tick=0;
+ 524   2          display_24c02 (0x01);
+ 525   2        }
+ 526   1      }
+ 527          
  528          
- 529          
- 530          //控制任务切换
- 531          void task_control_center (void)
- 532          {
- 533   1        read_key ();//读取键盘
- 534   1        if(key_value==14)//当14按下时
- 535   1        {
- 536   2          TASK_RUN++;init_flag=1;//切换模式并让初始化重新开始
- 537   2        }
- 538   1        if(TASK_RUN>=10){TASK_RUN=1;}//模式切换限位
- 539   1      }
+ 529          //控制任务切换
+ 530          void task_control_center (void)
+ 531          {
+ 532   1        read_key ();//读取键盘
+ 533   1        if(key_value==14)//当14按下时
+ 534   1        {
+ 535   2          TASK_RUN++;init_flag=1;//切换模式并让初始化重新开始
+ 536   2        }
+ 537   1        if(TASK_RUN>=10){TASK_RUN=1;}//模式切换限位
+ 538   1      }
+ 539          
  540          
  541          
- 542          
- 543          int main (void)
- 544          {
- 545   1        //关闭外设
- 546   1        P2=0X80;P0=0XFF;P2=0X00;
- 547   1        P2=0XA0;P0=0X00;P2=0X00;
- 548   1      
- 549   1        //任务定时器初始化
-C51 COMPILER V9.54   MAIN                                                                  03/23/2023 20:23:18 PAGE 10  
+ 542          int main (void)
+ 543          {
+ 544   1        //关闭外设
+ 545   1        P2=0X80;P0=0XFF;P2=0X00;
+ 546   1        P2=0XA0;P0=0X00;P2=0X00;
+ 547   1      
+ 548   1        //任务定时器初始化
+ 549   1        Timer2Init();
+C51 COMPILER V9.54   MAIN                                                                  04/05/2023 11:40:31 PAGE 10  
 
- 550   1        Timer2Init();
- 551   1        
- 552   1          
- 553   1        while(1)
- 554   1        {
- 555   2          
- 556   2          if(init_flag)//若初始化flag为1则执行初始化操作
- 557   2          {
- 558   3          //非任务6关闭定时器1（关闭串口）
- 559   3          if(TASK_RUN!=6)
- 560   3          {
- 561   4            TR1=0;
- 562   4          }   
- 563   3          //非任务8关闭无关外设
- 564   3          if(TASK_RUN!=8)
- 565   3          {
- 566   4            P2=0X80;P0=0XFF;P2=0X00;
- 567   4            P2=0XA0;P0=0X00;P2=0X00;
- 568   4          }   
- 569   3          //任务1初始化 
- 570   3          if(TASK_RUN==1){task1_init ();} 
- 571   3          //任务3初始化 
- 572   3          if(TASK_RUN==3){task3_init ();}
- 573   3          //任务4初始化 
- 574   3          if(TASK_RUN==4){task4_init ();}
- 575   3          //任务6初始化 
- 576   3          if(TASK_RUN==6){task6_init ();}
- 577   3          //任务9初始化 
- 578   3          if(TASK_RUN==9){task9_init ();}
- 579   3          init_flag=0;//置零初始化标志位
- 580   3          } 
- 581   2              
- 582   2          //任务1循环 
- 583   2          if(TASK_RUN==1){task1_loop();}
- 584   2          //任务2循环 
- 585   2          if(TASK_RUN==2){task2_loop();}
- 586   2      
- 587   2          //任务3只能在中断中运行
- 588   2      
- 589   2          //任务4循环 
- 590   2          if(TASK_RUN==4){task4_loop();}
- 591   2          //任务5循环 
- 592   2          if(TASK_RUN==5){task5_loop();}
- 593   2          //任务6循环 
- 594   2          if(TASK_RUN==6){task6_loop();}
- 595   2          //任务7循环 
- 596   2          if(TASK_RUN==7){task7_loop();}
- 597   2          //任务8循环 
- 598   2          if(TASK_RUN==8){task8_loop();}
- 599   2          //任务9循环 
- 600   2          if(TASK_RUN==9){task9_loop();}
- 601   2            
- 602   2          task_control_center ();//任务切换中心
- 603   2        } 
- 604   1      }
+ 550   1        
+ 551   1          
+ 552   1        while(1)
+ 553   1        {
+ 554   2          
+ 555   2          if(init_flag)//若初始化flag为1则执行初始化操作
+ 556   2          {
+ 557   3          //非任务6关闭定时器1（关闭串口）
+ 558   3          if(TASK_RUN!=6)
+ 559   3          {
+ 560   4            TR1=0;
+ 561   4          }   
+ 562   3          //非任务8关闭无关外设
+ 563   3          if(TASK_RUN!=8)
+ 564   3          {
+ 565   4            P2=0X80;P0=0XFF;P2=0X00;
+ 566   4            P2=0XA0;P0=0X00;P2=0X00;
+ 567   4          }   
+ 568   3          //任务1初始化 
+ 569   3          if(TASK_RUN==1){task1_init ();} 
+ 570   3          //任务3初始化 
+ 571   3          if(TASK_RUN==3){task3_init ();}
+ 572   3          //任务4初始化 
+ 573   3          if(TASK_RUN==4){task4_init ();}
+ 574   3          //任务6初始化 
+ 575   3          if(TASK_RUN==6){task6_init ();}
+ 576   3          //任务9初始化 
+ 577   3          if(TASK_RUN==9){task9_init ();}
+ 578   3          init_flag=0;//置零初始化标志位
+ 579   3          } 
+ 580   2              
+ 581   2          //任务1循环 
+ 582   2          if(TASK_RUN==1){task1_loop();}
+ 583   2          //任务2循环 
+ 584   2          if(TASK_RUN==2){task2_loop();}
+ 585   2      
+ 586   2          //任务3只能在中断中运行
+ 587   2      
+ 588   2          //任务4循环 
+ 589   2          if(TASK_RUN==4){task4_loop();}
+ 590   2          //任务5循环 
+ 591   2          if(TASK_RUN==5){task5_loop();}
+ 592   2          //任务6循环 
+ 593   2          if(TASK_RUN==6){task6_loop();}
+ 594   2          //任务7循环 
+ 595   2          if(TASK_RUN==7){task7_loop();}
+ 596   2          //任务8循环 
+ 597   2          if(TASK_RUN==8){task8_loop();}
+ 598   2          //任务9循环 
+ 599   2          if(TASK_RUN==9){task9_loop();}
+ 600   2            
+ 601   2          task_control_center ();//任务切换中心
+ 602   2        } 
+ 603   1      }
+ 604          
  605          
- 606          
- 607          //定时器中断回调函数（为什么是中断12，在范例程序里面可以找到定时器2的中断就是12）
- 608          void server (void) interrupt 12
- 609          { 
- 610   1        //数码管刷新部分以及基础控制部分
- 611   1        static unsigned char tick_8ms;//数码管计时器
-C51 COMPILER V9.54   MAIN                                                                  03/23/2023 20:23:18 PAGE 11  
+ 606          //定时器中断回调函数（为什么是中断12，在范例程序里面可以找到定时器2的中断就是12）
+ 607          void server (void) interrupt 12
+ 608          { 
+ 609   1        //数码管刷新部分以及基础控制部分
+ 610   1        static unsigned char tick_8ms;//数码管计时器
+ 611   1        tick_8ms++;if(tick_8ms==8){tick_8ms=0;}//数码管计时到8ms重置（使其一直在0-7循环）
+C51 COMPILER V9.54   MAIN                                                                  04/05/2023 11:40:31 PAGE 11  
 
- 612   1        tick_8ms++;if(tick_8ms==8){tick_8ms=0;}//数码管计时到8ms重置（使其一直在0-7循环）
- 613   1        smg(tick_8ms,SMG[tick_8ms]);//给数码管0-7刷新对应SMG[0]-SMG[7]的内容
- 614   1        BASIC();//基础LED、蜂鸣器、继电器控制
- 615   1      
- 616   1        //任务1计数器自增，以及防止溢出
- 617   1        task1_tick++;if(task1_tick>2000){task1_tick=0;}
- 618   1        //任务2计数器自增，以及防止溢出
- 619   1        task2_tick++;if(task2_tick>2000){task2_tick=0;}
- 620   1        //任务3计数器自增，以及防止溢出
- 621   1        task3_tick++;if(task3_tick>2000){task3_tick=0;}
- 622   1        //任务4计数器自增，以及防止溢出
- 623   1        task4_tick++;if(task4_tick>2000){task4_tick=0;}
- 624   1        //任务5计数器自增，以及防止溢出
- 625   1        task5_tick++;if(task5_tick>2000){task5_tick=0;}
- 626   1        //任务6计数器自增，以及防止溢出
- 627   1        task6_tick++;if(task6_tick>2000){task6_tick=0;}
- 628   1        //任务7计数器自增，以及防止溢出
- 629   1        task7_tick++;if(task7_tick>2000){task7_tick=0;}
- 630   1        //任务8计数器自增，以及防止溢出
- 631   1        task8_tick++;if(task8_tick>2000){task8_tick=0;}
- 632   1        //任务9计数器自增，以及防止溢出
- 633   1        task9_tick++;if(task9_tick>2000){task9_tick=0;}
- 634   1      
- 635   1        //任务3循环 
- 636   1        if(TASK_RUN==3){task3_loop();}
- 637   1      }
- 638          
+ 612   1        smg(tick_8ms,SMG[tick_8ms]);//给数码管0-7刷新对应SMG[0]-SMG[7]的内容
+ 613   1        BASIC();//基础LED、蜂鸣器、继电器控制
+ 614   1      
+ 615   1        //任务1计数器自增，以及防止溢出
+ 616   1        task1_tick++;if(task1_tick>2000){task1_tick=0;}
+ 617   1        //任务2计数器自增，以及防止溢出
+ 618   1        task2_tick++;if(task2_tick>2000){task2_tick=0;}
+ 619   1        //任务3计数器自增，以及防止溢出
+ 620   1        task3_tick++;if(task3_tick>2000){task3_tick=0;}
+ 621   1        //任务4计数器自增，以及防止溢出
+ 622   1        task4_tick++;if(task4_tick>2000){task4_tick=0;}
+ 623   1        //任务5计数器自增，以及防止溢出
+ 624   1        task5_tick++;if(task5_tick>2000){task5_tick=0;}
+ 625   1        //任务6计数器自增，以及防止溢出
+ 626   1        task6_tick++;if(task6_tick>2000){task6_tick=0;}
+ 627   1        //任务7计数器自增，以及防止溢出
+ 628   1        task7_tick++;if(task7_tick>2000){task7_tick=0;}
+ 629   1        //任务8计数器自增，以及防止溢出
+ 630   1        task8_tick++;if(task8_tick>2000){task8_tick=0;}
+ 631   1        //任务9计数器自增，以及防止溢出
+ 632   1        task9_tick++;if(task9_tick>2000){task9_tick=0;}
+ 633   1      
+ 634   1        //任务3循环 
+ 635   1        if(TASK_RUN==3){task3_loop();}
+ 636   1      }
+ 637          
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE

@@ -347,14 +347,13 @@ void FrequenceInit(void)		//100微秒@12.000MHz
 //频率采集函数（一定得放在定时器中断里并且定时器中断时间必须为1ms）
 void Frequence (void)
 {
-	static int tick_500ms;//500ms计时标志位
-	tick_500ms++;//计时标志自增
-	if(tick_500ms==500)
+	static int tick_1s;//1s计时标志位
+	tick_1s++;//计时标志自增
+	if(tick_1s==1000)
 	{
 		TR0=0;//停止定时器0计时
-		tick_500ms=0;//清零计时标志
+		tick_1s=0;//清零计时标志
 		fre=(TH0<<8)+TL0;//更新频率
-		fre*=2;//频率翻倍
 		TH0=0;TL0=0;TR0=1;//清除初始值并重新开始计时
 	}	
 }
