@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   MAIN                                                                  02/15/2023 13:34:59 PAGE 1   
+C51 COMPILER V9.54   MAIN                                                                  04/05/2023 11:43:28 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
@@ -62,7 +62,7 @@ line level    source
   52   1          SMG[2]=16;
   53   1        if(frequence>9999){SMG[3]=frequence/10000%10;}else{SMG[3]=16;}
   54   1        if(frequence>999)SMG[4]=frequence/1000%10;else{SMG[4]=16;}
-C51 COMPILER V9.54   MAIN                                                                  02/15/2023 13:34:59 PAGE 2   
+C51 COMPILER V9.54   MAIN                                                                  04/05/2023 11:43:28 PAGE 2   
 
   55   1        if(frequence>99)SMG[5]=frequence/100%10;else{SMG[5]=16;}
   56   1        if(frequence>9)SMG[6]=frequence/10%10;else{SMG[6]=16;}
@@ -84,12 +84,12 @@ line level    source
   72          
   73          void frequence_detect (void)
   74          {
-  75   1        static unsigned int tick_500ms;
-  76   1        tick_500ms++;
-  77   1        if(tick_500ms==500)
+  75   1        static unsigned int tick_1s;
+  76   1        tick_1s++;
+  77   1        if(tick_1s==1000)
   78   1        {
   79   2          TR0 = 0;
-  80   2          tick_500ms=0;
+  80   2          tick_1s=0;
   81   2          frequence=TH0<<8;
   82   2          frequence+=TL0;
   83   2          TH0=0;

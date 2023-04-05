@@ -72,15 +72,14 @@ display_frequence();
 
 void frequence_detect (void)
 {
-	static unsigned int tick_500ms;
-	tick_500ms++;
-	if(tick_500ms==500)
+	static unsigned int tick_1s;
+	tick_1s++;
+	if(tick_1s==1000)
 	{
 		TR0 = 0;
-		tick_500ms=0;
+		tick_1s=0;
 		frequence=TH0<<8;
 		frequence+=TL0;
-		frequence*=2;
 		TH0=0;
 		TL0=0;
 		TR0=1;
